@@ -4,6 +4,10 @@ library(ggplot2)
 library(reshape2)
 library(metR)
 
+library(gitcreds)
+
+gitcreds_set()
+
 #https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
 
 lm.mod <- lm(mpg ~ wt*hp, data = mtcars)
