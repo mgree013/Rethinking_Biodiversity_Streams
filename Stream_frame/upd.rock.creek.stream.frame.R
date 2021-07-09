@@ -10,7 +10,7 @@ library(gtable)
 library(grid)
 library(cowplot)
 library(betareg)
-a
+
 species<-read.csv(file = "Analysis/With.rock.creek/Stream_frame/sp.density.update.12.28.19.csv", row.name=1)
 env <-read.csv(file = "Analysis/With.rock.creek/Stream_frame/dave.matt.env.all.csv", row.name=1)
 summary(env)
