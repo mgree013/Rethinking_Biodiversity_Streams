@@ -1,5 +1,5 @@
 setwd("~/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH") 
-getwd()
+
 library(vegan)
 library(tidyverse)
 library(dplyr)
