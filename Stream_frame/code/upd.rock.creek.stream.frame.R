@@ -17,11 +17,12 @@ library(betareg)
 
 getwd()
 
+#Read Data Files
 species<-read.csv(file = "Stream_frame/data/sp.density.update.12.28.19.csv", row.name=1)
 env <-read.csv(file = "Stream_frame/data/dave.matt.env.all.csv", row.name=1)
 summary(env)
 
-#Resolved Species list now
+#Clean Data
 species<-species%>%dplyr::select(-c(Chironomidae,Arachnida,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 
 env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist))
@@ -73,7 +74,6 @@ all<-cbind(diversity,betas.LCBD, env)
 specie<-all
 #########################################################################################################################species Richness for each Network
 
-##########################################################################################################
 specie%>%
  filter(Head.river.dist>3)%>%
   gather(N0, N1, E10, betas.LCBD, key = "var", value = "value") %>% 
@@ -247,8 +247,6 @@ plot_grid(d.b1,d.r1,d.e1,d.b2,d.r2,d.e2)
 plot_grid(d.b1,d.e1,d.b2,d.e2)
 
 
-########################################################################################################################
-#########################################################################################################################
 #########################################################################################################################################################################################
 ##Final Figure Appendix
 new_labels <- c( "Head.river.dist" = "Headwater River Distance", "River.dist.lake" = "River Distance from Lakes")
@@ -259,7 +257,7 @@ e2<-specie%>%
   pivot_longer(c(Head.river.dist,River.dist.lake) , names_to = "key", values_to = "value")
 summary(e2)
 
-#PCBD
+#LCBD
 g1<-e2%>% 
   ggplot(aes(x = value, y =betas.LCBD, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
   geom_point(data = filter(e2, O.NET =="BUBBS" & key=="Head.river.dist"), shape=19)+

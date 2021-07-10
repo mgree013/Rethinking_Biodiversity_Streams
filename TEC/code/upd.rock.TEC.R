@@ -7,8 +7,8 @@ setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity S
 
 
 
-species<-read.csv(file= "Analysis/With.rock.creek/TEC/sp.density.update.12.28.19.csv", row.name=1)
-env <-read.csv(file= "Analysis/With.rock.creek/TEC/dave.matt.env.full.12.29.19.csv", row.name=1)
+species<-read.csv(file= "TEC/data/sp.density.update.12.28.19.csv", row.name=1)
+env <-read.csv(file= "TEC/data/dave.matt.env.full.12.29.19.csv", row.name=1)
 
 env<-env%>%dplyr::select(-c(WOODY_WETLANDS))
 summary(env)
@@ -492,9 +492,9 @@ p6<-all_big_dat%>%
 
 plot_grid(p2,p5,p1,p4,p3,p6,ncol=2)
 ############################################################################################################################################
-#GLM's
+#Statiscal Analysis: GLM's
 
-#LCBD
+#1)LCBD
 mod1<-glm(betas.LCBD~Spatial,family=gaussian(),data=all_big_dat)
 mod2<-glm(betas.LCBD~E_PC1,family=gaussian(),data=all_big_dat)
 mod3<-glm(betas.LCBD~Com.Size.Gradient,family=gaussian(),data=all_big_dat)
@@ -515,7 +515,7 @@ pseudoR5 <- ((mod5$null.deviance-mod5$deviance)/mod5$null.deviance)
 pseudoR6 <- ((mod6$null.deviance-mod6$deviance)/mod6$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 
-#N1
+#2)N1
 mod1<-glm(N1~Spatial,family=gaussian(link = "identity"),data=all_big_dat)
 mod2<-glm(N1~E_PC1,family=gaussian(link = "identity"),data=all_big_dat)
 mod3<-glm(N1~Com.Size.Gradient,family=gaussian(link = "identity"),data=all_big_dat)

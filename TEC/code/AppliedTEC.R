@@ -18,23 +18,26 @@ setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity S
 
 getwd()
 
+#Read Data Files
+
 species<-read.csv(file= "TEC/data/sp.density.update.12.28.19_2.csv", row.name=1)
 env <-read.csv(file= "TEC/data/dave.matt.env.full.12.29.19.csv", row.name=1)
 spa<-read.csv(file= "TEC/data/spa.csv", row.name=1)
 
+#Clean Data
 env<-env%>%dplyr::select(-c(WOODY_WETLANDS))
 summary(env)
 
-species<-species%>%dplyr::select(-c(Arachnida,Chironomidae,Nematomorpha,Nemerata,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
+species<-species%>%dplyr::select(-c(Arachnida,Chironomidae,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria))
 #env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist),Size.net.dist=Head.river.dist*Up.Lake.area,Size.river.dist=River.dist.lake*Up.Lake.area,Elev.dist=River.dist.lake/Elevation)
+########################################################################################################################
 
-#Calcualte diversity and bind with envrioemtnal data, remove network if necessary
+#Calculate diversity and bind with environmental data, remove network if necessary
 
 #aa%>%column_to_rownames("site")
 Sites<-as.data.frame(rownames(all))
 
 diversity<-species%>%
-  #group_by(Site,Network)%>%
   transmute(N0=rowSums(species > 0),H= diversity(species),N1 =exp(H),N2 =diversity(species, "inv"),J= H/log(N0),E10= (N1/N0),E20= (N2/N0),
             Com.Size=rowSums(species),betas.LCBD=beta.div(species, method="hellinger",sqrt.D=TRUE)$LCBD ,betas.LCBD.p=beta.div(species, method="chord",sqrt.D=TRUE)$p.LCBD)
 
@@ -444,6 +447,7 @@ evo6<-glm(N0~Com.Size.Gradient,data=evo_all_dat)
 evo7<-glm(N0~1,data=evo_all_dat)
 reported.table0 <- bbmle::AICtab(evo,evo1,evo2,evo3,evo4,evo5,evo6,evo7, weights = TRUE, sort = TRUE)
 
+#opt 2 simple linear models
 casc4<-lm(N0~S_PC1,data=casc_all_dat)
 summary(casc4)
 casc5<-lm(N0~E_PC1,data=casc_all_dat)
