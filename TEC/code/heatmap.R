@@ -1,10 +1,16 @@
+#paper title: Rethinking Biodiversity in Stream Ecology Frameworks
+#Plotting Two way  interactions with heatmaps and contour lines
+#Author: Matthew Douglas Green
+#Date: May 5,2020
+#Reference: https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
+
+########################################################################################################################
 library(cowplot)
 library(viridis)
 library(ggplot2)
 library(reshape2)
 library(metR)
 
-#https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
 
 lm.mod <- lm(mpg ~ wt*hp, data = mtcars)
 summary(lm.mod)

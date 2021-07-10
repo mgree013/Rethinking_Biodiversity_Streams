@@ -1,4 +1,10 @@
-#Part 2 Applied TEC Framework
+#paper title: Rethinking Biodiversity in Stream Ecology Frameworks
+#Part 2 of Analysis: Applied TEC Framework
+#Author: Matthew Douglas Green
+#Date: May 5,2020
+
+########################################################################################################################
+
 library(vegan)
 library(tidyverse)
 library(MuMIn)
@@ -10,12 +16,11 @@ library(ggbiplot)
 
 setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH")
 
+getwd()
 
-
-species<-read.csv(file= "Analysis/TEC/sp.density.update.12.28.19_2.csv", row.name=1)
-#species <- mutate_all(species, function(x) as.numeric(as.character(x)))
-env <-read.csv(file= "Analysis/TEC/dave.matt.env.full.12.29.19.csv", row.name=1)
-spa<-read.csv(file= "Analysis/TEC/spa.csv", row.name=1)
+species<-read.csv(file= "TEC/data/sp.density.update.12.28.19_2.csv", row.name=1)
+env <-read.csv(file= "TEC/data/dave.matt.env.full.12.29.19.csv", row.name=1)
+spa<-read.csv(file= "TEC/data/spa.csv", row.name=1)
 
 env<-env%>%dplyr::select(-c(WOODY_WETLANDS))
 summary(env)

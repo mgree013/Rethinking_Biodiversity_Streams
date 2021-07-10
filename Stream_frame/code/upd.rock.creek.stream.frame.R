@@ -1,5 +1,9 @@
-setwd("~/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH") 
-
+#paper title: Rethinking Biodiversity in Stream Ecology Frameworks
+#Part 1 of Analysis: Stream Biodiversity Frameworks
+#Author: Matthew Douglas Green
+#Date: May 5,2020
+########################################################################################################################
+#load Libraries
 library(vegan)
 library(tidyverse)
 library(dplyr)
@@ -11,18 +15,20 @@ library(grid)
 library(cowplot)
 library(betareg)
 
-species<-read.csv(file = "Analysis/With.rock.creek/Stream_frame/sp.density.update.12.28.19.csv", row.name=1)
-env <-read.csv(file = "Analysis/With.rock.creek/Stream_frame/dave.matt.env.all.csv", row.name=1)
+getwd()
+
+species<-read.csv(file = "Stream_frame/data/sp.density.update.12.28.19.csv", row.name=1)
+env <-read.csv(file = "Stream_frame/data/dave.matt.env.all.csv", row.name=1)
 summary(env)
 
-#resolved SPecies list now
+#Resolved Species list now
 species<-species%>%dplyr::select(-c(Chironomidae,Arachnida,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 
 env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist))
 
-#Calcualte diversity and bind with envrioemtnal data, remove network if necessary
+########################################################################################################################
+#Calculate diversity and bind with environmental data, remove network if necessary
 diversity<-species%>%
-  #group_by(Site,Network)%>%
   transmute(N0=rowSums(species > 0),H= diversity(species),N1 =exp(H),N2 =diversity(species, "inv"),J= H/log(N0),E10= (N1/N0),E20= (N2/N0),Com.Size=rowSums(species)) #,betas.LCBD=beta.div(species, method="hellinger",sqrt.D=TRUE)$LCBD ,betas.LCBD.p=beta.div(species, method="chord",sqrt.D=TRUE)$p.LCBD )
 
 
@@ -65,8 +71,7 @@ betas.LCBD<-c(kern.beta$LCBD,casc.beta$LCBD,evo.beta$LCBD,bubb.beta$LCBD,young.b
 
 all<-cbind(diversity,betas.LCBD, env)
 specie<-all
-###########################################################################################
-#species Richness for each Network
+#########################################################################################################################species Richness for each Network
 
 ##########################################################################################################
 specie%>%
