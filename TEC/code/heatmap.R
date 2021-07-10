@@ -345,7 +345,7 @@ plot_grid(tec_bd1_,tec_n1_,tec_bd2_,tec_n2_,tec_bd3_,tec_n3_,nrow=3)
 write.csv(prepplot112,"okay.csv")
 write.csv(all_big_dat,"okay1.csv")
 
-oh<-read.csv("okay.csv")
+oh<-read.csv("Int_plot_data/okay.csv")
 
 ggplot(data=oh,aes(x = E_PC1, y = Com.Size.Gradient,z=est.beta))+ 
   geom_contour(aes(colour = after_stat(level)))+
@@ -364,9 +364,8 @@ ggplot(data=oh,aes(x = E_PC1, y = Com.Size.Gradient,z=est.beta))+
 ################################################################################################
 #Stream Eco Frames Interactive Plots
 #write.csv(dd_specie,"stream_data.csv")
-library(viridis)
 #write.csv(prepplot2,"st.n1.csv")
-st_n1<-read.csv("st.n1.csv")
+st_n1<-read.csv("Int_plot_data/st.n1.csv")
 
 st_n1_<-ggplot(data=st_n1,aes(x = est.River.dist.lake, y = est.Head.river.dist,z=est.n1))+ 
   geom_point(aes(x = River.dist.lake, y = Head.river.dist, colour=SD))+
@@ -386,7 +385,7 @@ st_n1_<-ggplot(data=st_n1,aes(x = est.River.dist.lake, y = est.Head.river.dist,z
 
 
 #write.csv(prepplot1,"st.bd.csv")
-st_bd<-read.csv("st.bd.csv")
+st_bd<-read.csv("Int_plot_data/st.bd.csv")
 
 st_bd_<-ggplot(data=st_bd,aes(x = est.River.dist.lake, y = est.Head.river.dist,z=est.beta))+ 
   geom_point(aes(x = River.dist.lake, y = Head.river.dist, colour=BD))+
@@ -407,7 +406,7 @@ st_bd_<-ggplot(data=st_bd,aes(x = est.River.dist.lake, y = est.Head.river.dist,z
 #write.csv(all_big_dat,"okay1.csv")
 
 #write.csv(prepplot0,"tec.n1.csv")
-tec_n1<-read.csv("tec.n1.csv")
+tec_n1<-read.csv("Int_plot_data/tec.n1.csv")
 
 tec_n1_<-ggplot(data=tec_n1,aes(x = est.E_PC1, y = est.Com.Size.Gradient,z=est.n1))+ 
   geom_point(aes(x = E_PC1, y = Com.Size.Gradient, colour=SD))+
@@ -424,8 +423,8 @@ tec_n1_<-ggplot(data=tec_n1,aes(x = est.E_PC1, y = est.Com.Size.Gradient,z=est.n
         panel.background = element_blank()) +
   scale_color_viridis()
 
-write.csv(prepplot01,"tec.n2.csv")
-tec_n2<-read.csv("tec.n2.csv")
+#write.csv(prepplot01,"tec.n2.csv")
+tec_n2<-read.csv("Int_plot_data/tec.n2.csv")
 
 tec_n2_<-ggplot(data=tec_n2,aes(x = Spatial, y = Com.Size.Gradient,z=SD))+ 
   geom_point(aes(x = Spatial, y = Com.Size.Gradient, colour=SD))+
@@ -444,7 +443,7 @@ tec_n2_<-ggplot(data=tec_n2,aes(x = Spatial, y = Com.Size.Gradient,z=SD))+
 
 
 #write.csv(prepplot016,"tec.n3.csv")
-tec_n3<-read.csv("tec.n3.csv")
+tec_n3<-read.csv("Int_plot_data/Int_plot_data/tec.n3.csv")
 
 tec_n3_<-ggplot(data=tec_n3,aes(x = est.Spatial, y = est.E_PC1,z=est.n1))+ 
   geom_point(aes(x = Spatial, y = E_PC1, colour=SD))+
@@ -466,7 +465,7 @@ tec_n3_<-ggplot(data=tec_n3,aes(x = est.Spatial, y = est.E_PC1,z=est.n1))+
 
 
 #write.csv(prepplot112,"tec.bd1.csv")
-tec_bd1<-read.csv("tec.bd1.csv")
+tec_bd1<-read.csv("Int_plot_data/tec.bd1.csv")
 
 tec_bd1_<-ggplot(data=tec_bd1,aes( x = est.E_PC1,y = est.Com.Size.Gradient,z=est.beta))+ 
   geom_point(aes( x = E_PC1,y = Com.Size.Gradient, colour=BD))+
@@ -484,7 +483,7 @@ tec_bd1_<-ggplot(data=tec_bd1,aes( x = est.E_PC1,y = est.Com.Size.Gradient,z=est
   scale_color_viridis()
 
 #write.csv(prepplot111,"tec.bd2.csv")
-tec_bd2<-read.csv("tec.bd2.csv")
+tec_bd2<-read.csv("Int_plot_data/tec.bd2.csv")
 
 tec_bd2_<-ggplot(data=tec_bd2,aes( x = est.Spatial,y = est.Com.Size.Gradient,z=est.beta))+ 
   geom_point(aes( x = Spatial, y = Com.Size.Gradient,colour=BD))+
@@ -502,7 +501,7 @@ tec_bd2_<-ggplot(data=tec_bd2,aes( x = est.Spatial,y = est.Com.Size.Gradient,z=e
   scale_color_viridis()
 
 #write.csv(prepplot,"tec.bd3.csv")
-tec_bd3<-read.csv("tec.bd3.csv")
+tec_bd3<-read.csv("Int_plot_data/tec.bd3.csv")
 
 tec_bd3_<-ggplot(data=tec_bd3,aes(x = est.Spatial,y = est.E_PC1, z=est.beta))+ 
   geom_point(aes( x = Spatial,y = E_PC1, colour=BD))+
