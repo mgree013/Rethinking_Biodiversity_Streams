@@ -4,13 +4,15 @@
 #Date: May 5,2020
 #Reference: https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
 
-########################################################################################################################
 library(cowplot)
 library(viridis)
 library(ggplot2)
 library(reshape2)
+library(tidyverse)
 library(metR)
-
+library(usethis)
+usethis::use_github()
+#https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
 
 lm.mod <- lm(mpg ~ wt*hp, data = mtcars)
 summary(lm.mod)
@@ -57,7 +59,7 @@ b1<-ggplot(prepplot, aes(E_PC1, Spatial, fill = est.beta)) +
   scale_y_continuous(expand = c(0,0))+
   labs(fill = "Est.BD")
 
- #Beta-Space*Com size
+#Beta-Space*Com size
 lm.mod<-glm(betas.LCBD~Spatial*Com.Size.Gradient,family=gaussian(link = "log"),data=all_big_dat)
 summary(lm.mod)
 
@@ -137,7 +139,7 @@ lm.mod<-glm(N1~Spatial*Com.Size.Gradient,family=gaussian(link = "identity"),data
 summary(lm.mod)
 
 prepplot01 <- as.data.frame(matrix(ncol = 3, nrow = 10000))
-colnames(prepplot01) <- c("Spatial", "Com.Size.Gradient", "SD")
+colnames(prepplot01) <- c("Spatial", "Com.Size.Gradient", "est.n1")
 
 max(all_big_dat$Spatial)
 max(all_big_dat$Com.Size.Gradient)
@@ -145,9 +147,9 @@ max(all_big_dat$Com.Size.Gradient)
 prepplot01$Com.Size.Gradient <- rep(seq(3.170086,9.273556, length.out = 100), 100)
 prepplot01 <- prepplot01[order(prepplot01$Com.Size.Gradient),]
 prepplot01$Spatial <- rep(seq(-2.352044,7.043287, length.out = 100), 100)
-prepplot01$SD <-  8.8852   -0.6209*prepplot01$Com.Size.Gradient +1.7605 *prepplot01$Spatial + 
+prepplot01$est.n1 <-  8.8852   -0.6209*prepplot01$Com.Size.Gradient +1.7605 *prepplot01$Spatial + 
   -0.2393*prepplot01$Com.Size.Gradient*prepplot01$Spatial
-prepplot01$SD<-predict(lm.mod,prepplot01, type="response")
+prepplot01$est.n1<-predict(lm.mod,prepplot01, type="response")
 
 
 l2<-ggplot(prepplot01, aes(Spatial, Com.Size.Gradient, fill = est.n1)) + 
@@ -188,9 +190,9 @@ l3<-ggplot(prepplot016, aes(Spatial, E_PC1, fill = est.n1)) +
 
 plot_grid(b1,b2,b3,l1,l2,l3,nrow=2)
 ################################################################################################################################################################################################
-#Part 1) Stream Eco Frames
+#Stream Eco Frames
 
-#1a)Beta
+#Beta
 lm.mod <- lm(betas.LCBD ~ Head.river.dist*(River.dist.lake), data = dd_specie)
 summary(lm.mod)
 
@@ -248,7 +250,6 @@ aabb<-ggplot(prepplot2, aes(River.dist.lake, Head.river.dist, fill = est.n1)) +
   scale_y_continuous(expand = c(0,0))+
   labs(fill = "Est.LD")
 
-#Figure 3
 plot_grid(d.b1,d.e1,d.b2,d.e2,aab,aabb,nrow=3)
 
 ##############################################################################################################
@@ -301,7 +302,7 @@ tec.n1.3<-ggplot(prepplot016) +
   ggplot2::xlab("Spatial") + ylab("Environment") +
   ggplot2::labs(fill = "Est.SD")
 
-  
+
 tec.bd.3<-ggplot(prepplot) +
   geom_tile(aes( Spatial,E_PC1, fill = est.beta))+
   scale_fill_viridis_c()+
@@ -310,7 +311,7 @@ tec.bd.3<-ggplot(prepplot) +
   scale_y_continuous(expand = c(0,0))+
   ggplot2::ylab("Environment") + xlab("Spatial") +
   ggplot2::labs(fill = "Est.BD")
-  
+
 tec.bd.2<-ggplot(prepplot111) +
   geom_tile(aes( Spatial,Com.Size.Gradient, fill = est.beta))+
   scale_fill_viridis_c()+
@@ -342,10 +343,10 @@ plot_grid(tec_bd1_,tec_n1_,tec_bd2_,tec_n2_,tec_bd3_,tec_n3_,nrow=3)
 
 
 #############################################################################################################################
-write.csv(prepplot112,"okay.csv")
-write.csv(all_big_dat,"okay1.csv")
+#write.csv(prepplot112,"okay.csv")
+#write.csv(all_big_dat,"okay1.csv")
 
-oh<-read.csv("Int_plot_data/okay.csv")
+oh<-read.csv("okay.csv")
 
 ggplot(data=oh,aes(x = E_PC1, y = Com.Size.Gradient,z=est.beta))+ 
   geom_contour(aes(colour = after_stat(level)))+
@@ -364,8 +365,9 @@ ggplot(data=oh,aes(x = E_PC1, y = Com.Size.Gradient,z=est.beta))+
 ################################################################################################
 #Stream Eco Frames Interactive Plots
 #write.csv(dd_specie,"stream_data.csv")
-#write.csv(prepplot2,"st.n1.csv")
-st_n1<-read.csv("Int_plot_data/st.n1.csv")
+library(viridis)
+write.csv(prepplot2,"st.n1.csv")
+st_n1<-read.csv("st.n1.csv")
 
 st_n1_<-ggplot(data=st_n1,aes(x = est.River.dist.lake, y = est.Head.river.dist,z=est.n1))+ 
   geom_point(aes(x = River.dist.lake, y = Head.river.dist, colour=SD))+
@@ -385,7 +387,7 @@ st_n1_<-ggplot(data=st_n1,aes(x = est.River.dist.lake, y = est.Head.river.dist,z
 
 
 #write.csv(prepplot1,"st.bd.csv")
-st_bd<-read.csv("Int_plot_data/st.bd.csv")
+st_bd<-read.csv("st.bd.csv")
 
 st_bd_<-ggplot(data=st_bd,aes(x = est.River.dist.lake, y = est.Head.river.dist,z=est.beta))+ 
   geom_point(aes(x = River.dist.lake, y = Head.river.dist, colour=BD))+
@@ -406,14 +408,14 @@ st_bd_<-ggplot(data=st_bd,aes(x = est.River.dist.lake, y = est.Head.river.dist,z
 #write.csv(all_big_dat,"okay1.csv")
 
 #write.csv(prepplot0,"tec.n1.csv")
-tec_n1<-read.csv("Int_plot_data/tec.n1.csv")
+#tec_n1<-read.csv("tec.n1.csv")
 
 tec_n1_<-ggplot(data=tec_n1,aes(x = est.E_PC1, y = est.Com.Size.Gradient,z=est.n1))+ 
   geom_point(aes(x = E_PC1, y = Com.Size.Gradient, colour=SD))+
   geom_contour(aes(colour = after_stat(level)))+
   ggtitle("b)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
-  labs(x = "Environment", 
+  labs(x = "Environmental Gradient", 
        y = "Log Community Size", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
@@ -424,14 +426,14 @@ tec_n1_<-ggplot(data=tec_n1,aes(x = est.E_PC1, y = est.Com.Size.Gradient,z=est.n
   scale_color_viridis()
 
 #write.csv(prepplot01,"tec.n2.csv")
-tec_n2<-read.csv("Int_plot_data/tec.n2.csv")
+#tec_n2<-read.csv("tec.n2.csv")
 
-tec_n2_<-ggplot(data=tec_n2,aes(x = Spatial, y = Com.Size.Gradient,z=SD))+ 
+tec_n2_<-ggplot(data=tec_n2,aes(x = est.Spatial, y = est.Com.Size.Gradient,z=est.n1))+ 
   geom_point(aes(x = Spatial, y = Com.Size.Gradient, colour=SD))+
   geom_contour(aes(colour = after_stat(level)))+
   ggtitle("d)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
-  labs(x = "Spatial", 
+  labs(x = "Spatial Gradient", 
        y = "Log Community Size", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
@@ -443,15 +445,15 @@ tec_n2_<-ggplot(data=tec_n2,aes(x = Spatial, y = Com.Size.Gradient,z=SD))+
 
 
 #write.csv(prepplot016,"tec.n3.csv")
-tec_n3<-read.csv("Int_plot_data/Int_plot_data/tec.n3.csv")
+#tec_n3<-read.csv("tec.n3.csv")
 
 tec_n3_<-ggplot(data=tec_n3,aes(x = est.Spatial, y = est.E_PC1,z=est.n1))+ 
   geom_point(aes(x = Spatial, y = E_PC1, colour=SD))+
   #geom_contour(aes(colour = after_stat(level)))+
   ggtitle("f)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
-  labs(x = "Spatial", 
-       y = "Environment", 
+  labs(x = "Spatial Gradient", 
+       y = "Environmental Gradient", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
@@ -465,7 +467,7 @@ tec_n3_<-ggplot(data=tec_n3,aes(x = est.Spatial, y = est.E_PC1,z=est.n1))+
 
 
 #write.csv(prepplot112,"tec.bd1.csv")
-tec_bd1<-read.csv("Int_plot_data/tec.bd1.csv")
+#tec_bd1<-read.csv("tec.bd1.csv")
 
 tec_bd1_<-ggplot(data=tec_bd1,aes( x = est.E_PC1,y = est.Com.Size.Gradient,z=est.beta))+ 
   geom_point(aes( x = E_PC1,y = Com.Size.Gradient, colour=BD))+
@@ -473,7 +475,7 @@ tec_bd1_<-ggplot(data=tec_bd1,aes( x = est.E_PC1,y = est.Com.Size.Gradient,z=est
   ggtitle("a)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(y = "Log Community Size", 
-       x = "Environment", 
+       x = "Environmental Gradient", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
@@ -483,7 +485,7 @@ tec_bd1_<-ggplot(data=tec_bd1,aes( x = est.E_PC1,y = est.Com.Size.Gradient,z=est
   scale_color_viridis()
 
 #write.csv(prepplot111,"tec.bd2.csv")
-tec_bd2<-read.csv("Int_plot_data/tec.bd2.csv")
+#tec_bd2<-read.csv("tec.bd2.csv")
 
 tec_bd2_<-ggplot(data=tec_bd2,aes( x = est.Spatial,y = est.Com.Size.Gradient,z=est.beta))+ 
   geom_point(aes( x = Spatial, y = Com.Size.Gradient,colour=BD))+
@@ -491,7 +493,7 @@ tec_bd2_<-ggplot(data=tec_bd2,aes( x = est.Spatial,y = est.Com.Size.Gradient,z=e
   ggtitle("c)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(y = "Log Community Size", 
-       x = "Spatial", 
+       x = "Spatial Gradient", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
@@ -501,15 +503,15 @@ tec_bd2_<-ggplot(data=tec_bd2,aes( x = est.Spatial,y = est.Com.Size.Gradient,z=e
   scale_color_viridis()
 
 #write.csv(prepplot,"tec.bd3.csv")
-tec_bd3<-read.csv("Int_plot_data/tec.bd3.csv")
+#tec_bd3<-read.csv("tec.bd3.csv")
 
 tec_bd3_<-ggplot(data=tec_bd3,aes(x = est.Spatial,y = est.E_PC1, z=est.beta))+ 
   geom_point(aes( x = Spatial,y = E_PC1, colour=BD))+
   geom_contour(aes(colour = after_stat(level)))+
   ggtitle("e)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
-  labs(y = "Environment", 
-       x = "Spatial", 
+  labs(y = "Environmental Gradient", 
+       x = "Spatial Gradient", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
@@ -594,4 +596,3 @@ ggplot(prepplot211, aes(River.dist.lake, Head.river.dist, fill = est.Env)) +
   scale_x_continuous(expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0))+
   labs(fill = "Env")
-

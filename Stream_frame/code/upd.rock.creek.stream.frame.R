@@ -15,21 +15,18 @@ library(grid)
 library(cowplot)
 library(betareg)
 
-getwd()
-
-#Read Data Files
 species<-read.csv(file = "Stream_frame/data/sp.density.update.12.28.19.csv", row.name=1)
 env <-read.csv(file = "Stream_frame/data/dave.matt.env.all.csv", row.name=1)
 summary(env)
 
-#Clean Data
+#resolved SPecies list now
 species<-species%>%dplyr::select(-c(Chironomidae,Arachnida,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 
 env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist))
 
-########################################################################################################################
-#Calculate diversity and bind with environmental data, remove network if necessary
+#Calcualte diversity and bind with envrioemtnal data, remove network if necessary
 diversity<-species%>%
+  #group_by(Site,Network)%>%
   transmute(N0=rowSums(species > 0),H= diversity(species),N1 =exp(H),N2 =diversity(species, "inv"),J= H/log(N0),E10= (N1/N0),E20= (N2/N0),Com.Size=rowSums(species)) #,betas.LCBD=beta.div(species, method="hellinger",sqrt.D=TRUE)$LCBD ,betas.LCBD.p=beta.div(species, method="chord",sqrt.D=TRUE)$p.LCBD )
 
 
@@ -72,10 +69,12 @@ betas.LCBD<-c(kern.beta$LCBD,casc.beta$LCBD,evo.beta$LCBD,bubb.beta$LCBD,young.b
 
 all<-cbind(diversity,betas.LCBD, env)
 specie<-all
-#########################################################################################################################species Richness for each Network
+###########################################################################################
+#species Richness for each Network
 
+##########################################################################################################
 specie%>%
- filter(Head.river.dist>3)%>%
+  filter(Head.river.dist>3)%>%
   gather(N0, N1, E10, betas.LCBD, key = "var", value = "value") %>% 
   ggplot(aes(x =(Head.river.dist), y = value)) + #remove , fill=Network and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
   geom_point()+
@@ -165,6 +164,12 @@ mod5<-glm(betas.LCBD~River.dist.lake*Head.river.dist,family=gaussian(),data=dd_s
 null<-glm(betas.LCBD~1,family=gaussian(),data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
 
+mod1<-betareg(betas.LCBD~(River.dist.lake),data=dd_specie)
+mod2<-betareg(betas.LCBD~Head.river.dist,data=dd_specie)
+mod5<-betareg(betas.LCBD~River.dist.lake*Head.river.dist,data=dd_specie)
+null<-betareg(betas.LCBD~1,data=dd_specie)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
+summary(mod1)
 anova(mod1,mod2,mod5,mod6, null)
 
 pseudoR1 <- ((mod1$null.deviance-mod1$deviance)/mod1$null.deviance)
@@ -203,7 +208,7 @@ d.b2<-dd_specie%>%
   ggplot(aes(x = (Head.river.dist), y = betas.LCBD)) + geom_point()+
   ggtitle("c)") +
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
- # geom_smooth(method = "lm", se=F)+ 
+  # geom_smooth(method = "lm", se=F)+ 
   xlab(" Log Distance from Headwaters (m)") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+theme_bw() +
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
@@ -247,6 +252,8 @@ plot_grid(d.b1,d.r1,d.e1,d.b2,d.r2,d.e2)
 plot_grid(d.b1,d.e1,d.b2,d.e2)
 
 
+########################################################################################################################
+#########################################################################################################################
 #########################################################################################################################################################################################
 ##Final Figure Appendix
 new_labels <- c( "Head.river.dist" = "Headwater River Distance", "River.dist.lake" = "River Distance from Lakes")
@@ -257,7 +264,7 @@ e2<-specie%>%
   pivot_longer(c(Head.river.dist,River.dist.lake) , names_to = "key", values_to = "value")
 summary(e2)
 
-#LCBD
+#PCBD
 g1<-e2%>% 
   ggplot(aes(x = value, y =betas.LCBD, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
   geom_point(data = filter(e2, O.NET =="BUBBS" & key=="Head.river.dist"), shape=19)+
