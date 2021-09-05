@@ -6,7 +6,7 @@ library(ggbiplot)
 setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH")
 
 
-
+getwd()
 species<-read.csv(file= "TEC/data/sp.density.update.12.28.19.csv", row.name=1)
 env <-read.csv(file= "TEC/data/dave.matt.env.full.12.29.19.csv", row.name=1)
 
@@ -244,7 +244,7 @@ Rock_all_dat<-Rock_all_dat%>%
   mutate(Spatial=-1*S_PC1)
 
 
-  
+
 ###################################################################################################################################################################################################
 all_big_dat<-rbind(bubb_all_dat,evo_all_dat,casc_all_dat,Rock_all_dat)
 all_big_dat$Reg.Pool<-if_else(all_big_dat$O.NET =="BUBBS","88", 
@@ -409,7 +409,7 @@ p1<-all_big_dat%>%
   #geom_smooth(method = "lm")+
   #facet_wrap(~Network,scales="free") + 
   theme_bw()+
-  xlab("Environment") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+
+  xlab("Environmental Gradient") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.border = element_rect(colour = "black"))+
@@ -422,7 +422,7 @@ p2<-all_big_dat%>%
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
-  xlab("Spatial") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+
+  xlab("Spatial Gradient") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+
   #facet_wrap(~Network,scales="free") + 
   theme_bw()+
   theme(panel.grid.major = element_blank(),
@@ -452,7 +452,7 @@ p4<-all_big_dat%>%
   geom_point()+
   #stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
-  xlab(" Environment") +labs(y=(("Shannon Diversity")))+
+  xlab(" Environmental Gradient") +labs(y=(("Shannon Diversity")))+
   #facet_wrap(~Network,scales="free") + 
   theme_bw()+
   theme(panel.grid.major = element_blank(),
@@ -461,14 +461,14 @@ p4<-all_big_dat%>%
   theme(legend.position = "none")
 
 p5<-all_big_dat%>%
- # filter(Head.river.dist>3)%>%
+  # filter(Head.river.dist>3)%>%
   ggplot(aes(x = Spatial, y =N1 )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
   ggtitle("b)") +
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
   #facet_wrap(~Network,scales="free") + 
-  xlab("Spatial") +labs(y=(("Shannon Diversity")))+
+  xlab("Spatial Gradient") +labs(y=(("Shannon Diversity")))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -492,9 +492,9 @@ p6<-all_big_dat%>%
 
 plot_grid(p2,p5,p1,p4,p3,p6,ncol=2)
 ############################################################################################################################################
-#Statiscal Analysis: GLM's
+#GLM's
 
-#1)LCBD
+#LCBD
 mod1<-glm(betas.LCBD~Spatial,family=gaussian(),data=all_big_dat)
 mod2<-glm(betas.LCBD~E_PC1,family=gaussian(),data=all_big_dat)
 mod3<-glm(betas.LCBD~Com.Size.Gradient,family=gaussian(),data=all_big_dat)
@@ -515,7 +515,7 @@ pseudoR5 <- ((mod5$null.deviance-mod5$deviance)/mod5$null.deviance)
 pseudoR6 <- ((mod6$null.deviance-mod6$deviance)/mod6$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 
-#2)N1
+#N1
 mod1<-glm(N1~Spatial,family=gaussian(link = "identity"),data=all_big_dat)
 mod2<-glm(N1~E_PC1,family=gaussian(link = "identity"),data=all_big_dat)
 mod3<-glm(N1~Com.Size.Gradient,family=gaussian(link = "identity"),data=all_big_dat)
@@ -567,22 +567,43 @@ summary(dog)
 dog<-lm(N1~E_PC1*log(Com.Size+1), data=all_big_dat)
 summary(dog)
 
-###
-all_big_dat%>%
-  ggplot(aes(x=E_PC1,y=Spatial))+
-  geom_point(aes(x=E_PC1,y=Spatial, colour=betas.LCBD, size=betas.LCBD))+
-  geom_smooth(method = "lm",se=F)+
-  xlab("Env")+ theme_bw()+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_rect(colour = "black"))+
-  facet_grid(~O.NET)
 
+#Nww  Stuff
+
+#Gaussian dist
+library(olsrr)
+qqnorm(all_big_dat$N1)
+model <- lm(N1 ~ Spatial, data = all_big_dat)
+ols_plot_resid_fit(model)
+
+qqnorm(all_big_dat$betas.LCBD)
+model <- lm(betas.LCBD ~ Spatial, data = all_big_dat)
+ols_plot_resid_fit(model)
+
+###Autocorrelation among variables
+cor(all_big_dat$E_PC1,all_big_dat$Spatial)
+cor(all_big_dat$Com.Size.Gradient,all_big_dat$Spatial)
+cor(all_big_dat$E_PC1,all_big_dat$Com.Size.Gradient)
+
+cor(all_big_dat$Head.river.dist,all_big_dat$Com.Size.Gradient)
+cor(all_big_dat$Head.river.dist,all_big_dat$Spatial)
+cor(all_big_dat$Head.river.dist,all_big_dat$E_PC1)
+cor(all_big_dat$River.dist.lake,all_big_dat$Com.Size.Gradient)
+cor(all_big_dat$River.dist.lake,all_big_dat$Spatial)
+cor(all_big_dat$River.dist.lake,all_big_dat$E_PC1)
 
 all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
-  gather(E_PC1,E_PC2,E_PC3,E_PC4,E_PC5,E_PC6, key = "var", value = "value") %>%
+  gather(E_PC1,Spatial,Com.Size.Gradient, key = "var", value = "value") %>%
   ggplot(aes(x=log(Head.river.dist+1),y=value))+
+  geom_point()+
+  geom_smooth(method = "lm",se=F)+
+  facet_wrap(~var,scales="free")
+
+all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  gather(E_PC1,Spatial,Com.Size.Gradient, key = "var", value = "value") %>%
+  ggplot(aes(x=log(River.dist.lake+1),y=value))+
   geom_point()+
   geom_smooth(method = "lm",se=F)+
   facet_wrap(~var,scales="free")
@@ -597,5 +618,107 @@ df%>%
   ggplot(aes(x=(reg.pool),y=beta))+
   geom_point()+
   geom_smooth(method = "lm")
+
+all_big_dat%>%
+  ggplot(aes(x=E_PC1,y=Spatial))+
+  geom_point(aes(x=E_PC1,y=Spatial, colour=betas.LCBD, size=betas.LCBD))+
+  geom_smooth(method = "lm",se=F)+
+  xlab("Env")+ theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(colour = "black"))+
+  facet_grid(~O.NET)
+
+#SEMS
+summary(all_big_dat$Spatial)
+summary(all_big_dat$E_PC1)
+summary(all_big_dat$Com.Size.Gradient)
+summary(all_big_dat$betas.LCBD)
+summary(all_big_dat$N1)
+
+
+
+all_big_datz<-all_big_dat%>%
+  mutate(N1=N1*0.001+0.05,Spatial=Spatial*.01+0.05, E_PC1=E_PC1*.01+0.05,Com.Size.Gradient=Com.Size.Gradient*.01+0.05,betas.LCBD=betas.LCBD*10+0.05)
+
+summary(all_big_datz$Spatial)
+summary(all_big_datz$E_PC1)
+summary(all_big_datz$Com.Size.Gradient)
+summary(all_big_datz$betas.LCBD)
+summary(all_big_datz$N1)
+
+library(lavaan)
+library(semPlot)
+
+smod1 = ' N1 ~ Spatial +  E_PC1 + Com.Size.Gradient
+          betas.LCBD ~ Spatial +  E_PC1 + Com.Size.Gradient
+          '
+smod1 = ' betas.LCBD ~ Spatial +  E_PC1 + Com.Size.Gradient
+          '
+smod1 = ' N1 ~ Spatial +  E_PC1 + Com.Size.Gradient
+          '
+
+smod1.fit <- sem(smod1,data=all_big_datz)
+summary(smod1.fit,standardized=TRUE,rsq=T)
+fitMeasures(smod1.fit)
+modindices(smod1.fit)
+
+#quick plot of path analysis
+semPaths(smod1.fit, what='std', layout = "tree3", intercepts = FALSE, residuals = FALSE, 
+         edge.label.cex=1.25, curvePivot = FALSE,  fade=FALSE, rotation = 2)
+
+
+smod1 = ' diversity ~ Spatial +  E_PC1 + Com.Size.Gradient
+          diversity =~ betas.LCBD +  N1 
+          '
+
+#space<-'pred.persistence =~connect.per + meta.size +total.vol '
+smod1.fit <- sem(smod1,data=all_big_datz)
+summary(smod1.fit,standardized=TRUE,rsq=T)
+fitMeasures(smod1.fit)
+modindices(smod1.fit)
+
+#quick plot of path analysis
+semPaths(smod1.fit, what='std', layout = "tree3", intercepts = FALSE, residuals = FALSE, 
+         edge.label.cex=1.25, curvePivot = FALSE,  fade=FALSE, rotation = 2)
+
+
+smod1 = ' N1 ~ Head.river.dist +  River.dist.lake
+          betas.LCBD ~  Head.river.dist +  River.dist.lake 
+          '
+
+#space<-'pred.persistence =~connect.per + meta.size +total.vol '
+smod1.fit <- sem(smod1,data=dd_specie)
+summary(smod1.fit,standardized=TRUE,rsq=T)
+fitMeasures(smod1.fit)
+modindices(smod1.fit)
+
+#quick plot of path analysis
+semPaths(smod1.fit, what='std', layout = "tree3", intercepts = FALSE, residuals = FALSE, 
+         edge.label.cex=1.25, curvePivot = FALSE,  fade=FALSE, rotation = 2)
+
+smod1 = ' N1 ~ Head.river.dist +  River.dist.lake
+          '
+smod1 = 'betas.LCBD ~  Head.river.dist +  River.dist.lake '
+smod1.fit <- sem(smod1,data=dd_specie)
+summary(smod1.fit,standardized=TRUE,rsq=T)
+fitMeasures(smod1.fit)
+modindices(smod1.fit)
+
+#quick plot of path analysis
+semPaths(smod1.fit, what='std', layout = "tree3", intercepts = F, residuals = FALSE, 
+         edge.label.cex=1.25, curvePivot = FALSE,  fade=FALSE, rotation = 2)
+
+
+smod1 = ' diversity ~ Head.river.dist +  River.dist.lake
+           diversity =~ betas.LCBD +  N1 '
+smod1.fit <- sem(smod1,data=dd_specie)
+summary(smod1.fit,standardized=TRUE,rsq=T)
+fitMeasures(smod1.fit)
+modindices(smod1.fit)
+
+#quick plot of path analysis
+semPaths(smod1.fit, what='std', layout = "tree3", intercepts = FALSE, residuals = FALSE, 
+         edge.label.cex=1.25, curvePivot = FALSE,  fade=FALSE, rotation = 2)
 
 
