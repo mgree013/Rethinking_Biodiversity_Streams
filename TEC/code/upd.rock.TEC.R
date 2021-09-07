@@ -536,6 +536,36 @@ pseudoR5 <- ((mod5$null.deviance-mod5$deviance)/mod5$null.deviance)
 pseudoR6 <- ((mod6$null.deviance-mod6$deviance)/mod6$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 ################################################################################################################
+#GLMM's
+library(lme4)
+library(MuMIn)
+mod1<-lmer(betas.LCBD~Spatial+ (1|O.NET), data=all_big_dat)
+mod2<-lmer(betas.LCBD~E_PC1+ (1|O.NET),data=all_big_dat)
+mod3<-lmer(betas.LCBD~Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
+mod4<-lmer(betas.LCBD~Spatial*E_PC1+ (1|O.NET),data=all_big_dat)
+mod5<-lmer(betas.LCBD~Spatial*Com.Size.Gradient+ (1|O.NET), data=all_big_dat)
+mod6<-lmer(betas.LCBD~E_PC1*Com.Size.Gradient+ (1|O.NET), data=all_big_dat)
+mod7<-lmer(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),data=all_big_dat)
+null<-lmer(betas.LCBD~1+ (1|O.NET),data=all_big_dat)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6,mod7, null,weights = TRUE, sort = FALSE)
+summary(mod6)
+fixef(mod6)
+VarCorr(mod6)
+r.squaredGLMM(mod4)
+
+mod1<-lmer(N1~Spatial+ (1|O.NET),data=all_big_dat)
+mod2<-lmer(N1~E_PC1+ (1|O.NET),data=all_big_dat)
+mod3<-lmer(N1~Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
+mod4<-lmer(N1~Spatial*E_PC1+ (1|O.NET),data=all_big_dat)
+mod5<-lmer(N1~Spatial*Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
+mod6<-lmer(N1~E_PC1*Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
+mod7<-lmer(N1~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),data=all_big_dat)
+null<-lmer(N1~1+ (1|O.NET),data=all_big_dat)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6,mod7, null,weights = TRUE, sort = FALSE)
+summary(mod6)
+
+
+
 #LM's
 dog<-lm(betas.LCBD~E_PC1, data=all_big_dat)
 summary(dog)
@@ -581,33 +611,56 @@ model <- lm(betas.LCBD ~ Spatial, data = all_big_dat)
 ols_plot_resid_fit(model)
 
 ###Autocorrelation among variables
-cor(all_big_dat$E_PC1,all_big_dat$Spatial)
-cor(all_big_dat$Com.Size.Gradient,all_big_dat$Spatial)
-cor(all_big_dat$E_PC1,all_big_dat$Com.Size.Gradient)
+cor(all_big_dat$E_PC1,all_big_dat$Spatial, method = "pearson")
+cor(all_big_dat$Com.Size.Gradient,all_big_dat$Spatial, method = "pearson")
+cor(all_big_dat$E_PC1,all_big_dat$Com.Size.Gradient, method = "pearson")
 
-cor(all_big_dat$Head.river.dist,all_big_dat$Com.Size.Gradient)
-cor(all_big_dat$Head.river.dist,all_big_dat$Spatial)
-cor(all_big_dat$Head.river.dist,all_big_dat$E_PC1)
-cor(all_big_dat$River.dist.lake,all_big_dat$Com.Size.Gradient)
-cor(all_big_dat$River.dist.lake,all_big_dat$Spatial)
-cor(all_big_dat$River.dist.lake,all_big_dat$E_PC1)
+cor(all_big_dat$Head.river.dist,all_big_dat$Com.Size.Gradient, method = "pearson")
+cor(all_big_dat$Head.river.dist,all_big_dat$Spatial, method = "pearson")
+cor(all_big_dat$Head.river.dist,all_big_dat$E_PC1, method = "pearson")
+cor(all_big_dat$River.dist.lake,all_big_dat$Com.Size.Gradient, method = "pearson")
+cor(all_big_dat$River.dist.lake,all_big_dat$Spatial, method = "pearson")
+cor(all_big_dat$River.dist.lake,all_big_dat$E_PC1, method = "pearson")
 
 all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
   gather(E_PC1,Spatial,Com.Size.Gradient, key = "var", value = "value") %>%
   ggplot(aes(x=log(Head.river.dist+1),y=value))+
   geom_point()+
-  geom_smooth(method = "lm",se=F)+
-  facet_wrap(~var,scales="free")
+  geom_smooth(method = "lm",se=F)+ xlab("Distance from Headwaters (m)")+
+  facet_wrap(~var,scales="free")+theme_bw()+theme(panel.grid.major = element_blank(),
+                                                  panel.grid.minor = element_blank(),
+                                                  panel.border = element_rect(colour = "black"))
 
 all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
   gather(E_PC1,Spatial,Com.Size.Gradient, key = "var", value = "value") %>%
   ggplot(aes(x=log(River.dist.lake+1),y=value))+
   geom_point()+
-  geom_smooth(method = "lm",se=F)+
-  facet_wrap(~var,scales="free")
+  geom_smooth(method = "lm",se=F)+xlab("Distance from Upstream Lakes (m)")+
+  facet_wrap(~var,scales="free")+theme_bw()+theme(panel.grid.major = element_blank(),
+                                       panel.grid.minor = element_blank(),
+                                       panel.border = element_rect(colour = "black"))
 
+all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  gather(E_PC1,Spatial,Com.Size.Gradient,SHRUB_SCRUB,Chlorophyll.mean,Temp, Conductivity,  DO,   pH, Discharge.Mean, key = "var", value = "value") %>%
+  ggplot(aes(x=log(Head.river.dist+1),y=value))+
+  geom_point()+
+  geom_smooth(method = "lm",se=F)+xlab("Distance from Headwaters (m)")+
+  facet_wrap(~var,scales="free")+theme_bw()+theme(panel.grid.major = element_blank(),
+                                                  panel.grid.minor = element_blank(),
+                                                  panel.border = element_rect(colour = "black"))
+
+all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  gather(E_PC1,Spatial,Com.Size.Gradient,SHRUB_SCRUB,Chlorophyll.mean,Temp, Conductivity,  DO,   pH, Discharge.Mean, key = "var", value = "value") %>%
+  ggplot(aes(x=log(River.dist.lake+1),y=value))+
+  geom_point()+
+  geom_smooth(method = "lm",se=F)+xlab("Distance from Upstream Lakes (m)")+
+  facet_wrap(~var,scales="free")+theme_bw()+theme(panel.grid.major = element_blank(),
+                                       panel.grid.minor = element_blank(),
+                                       panel.border = element_rect(colour = "black"))
 
 reg.pool<-c(88,47,39,56,67)
 beta<-c(0.6313422,0.5546429,0.548144,0.7042006,0.5172451)
@@ -621,7 +674,7 @@ df%>%
 
 all_big_dat%>%
   ggplot(aes(x=E_PC1,y=Spatial))+
-  geom_point(aes(x=E_PC1,y=Spatial, colour=betas.LCBD, size=betas.LCBD))+
+  geom_point(aes(x=E_PC1,y=Spatial, colour=N1, size=N1))+
   geom_smooth(method = "lm",se=F)+
   xlab("Env")+ theme_bw()+
   theme(panel.grid.major = element_blank(),
