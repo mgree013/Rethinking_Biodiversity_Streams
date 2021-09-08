@@ -1,11 +1,12 @@
 #Part 2 Applied TEC Framework
-Packages <- c("vegan", "ggplot2", "tidyverse", "ape","MuMIn","adespatial", "betapart", "cowplot"," ggbiplot")
+
+#load packages
+Packages <- c("olsrr","semPlot","lavaan","MuMIn","lme4","vegan", "ggplot2", "tidyverse", "ape","MuMIn","adespatial", "betapart", "cowplot")
 lapply(Packages, library, character.only = TRUE)
 library(ggbiplot)
 
+#Open Data
 setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH")
-
-
 getwd()
 species<-read.csv(file= "TEC/data/sp.density.update.12.28.19.csv", row.name=1)
 env <-read.csv(file= "TEC/data/dave.matt.env.full.12.29.19.csv", row.name=1)
@@ -15,6 +16,7 @@ summary(env)
 
 species<-species%>%dplyr::select(-c(Arachnida,Chironomidae,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 #env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist),Size.net.dist=Head.river.dist*Up.Lake.area,Size.river.dist=River.dist.lake*Up.Lake.area,Elev.dist=River.dist.lake/Elevation)
+
 
 #Calcualte diversity and bind with envrioemtnal data, remove network if necessary
 
@@ -537,8 +539,7 @@ pseudoR6 <- ((mod6$null.deviance-mod6$deviance)/mod6$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 ################################################################################################################
 #GLMM's
-library(lme4)
-library(MuMIn)
+
 mod1<-lmer(betas.LCBD~Spatial+ (1|O.NET), data=all_big_dat)
 mod2<-lmer(betas.LCBD~E_PC1+ (1|O.NET),data=all_big_dat)
 mod3<-lmer(betas.LCBD~Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
@@ -601,7 +602,6 @@ summary(dog)
 #Nww  Stuff
 
 #Gaussian dist
-library(olsrr)
 qqnorm(all_big_dat$N1)
 model <- lm(N1 ~ Spatial, data = all_big_dat)
 ols_plot_resid_fit(model)
@@ -700,8 +700,7 @@ summary(all_big_datz$Com.Size.Gradient)
 summary(all_big_datz$betas.LCBD)
 summary(all_big_datz$N1)
 
-library(lavaan)
-library(semPlot)
+
 
 smod1 = ' N1 ~ Spatial +  E_PC1 + Com.Size.Gradient
           betas.LCBD ~ Spatial +  E_PC1 + Com.Size.Gradient
