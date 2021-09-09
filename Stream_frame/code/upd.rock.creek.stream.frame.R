@@ -183,6 +183,22 @@ mod5<-betareg(betas.LCBD~River.dist.lake*Head.river.dist,link = "logit",data=dd_
 null<-betareg(betas.LCBD~1,link = "logit",data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
 
+mod1<-glmmTMB(betas.LCBD~River.dist.lake+ (1|O.NET),family=beta_family(), data=dd_specie)
+mod2<-glmmTMB(betas.LCBD~Head.river.dist+ (1|O.NET),family=beta_family(),data=dd_specie)
+mod3<-glmmTMB(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),family=beta_family(),data=dd_specie)
+null<-glmmTMB(betas.LCBD~1+ (1|O.NET),family=beta_family(),data=dd_specie)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
+r2(mod1)
+r2(mod2)
+r2(mod3)
+r2(null)
+
+mod1<-glmmTMB(N1~River.dist.lake+ (1|O.NET),family=gaussian(), data=dd_specie)
+mod2<-glmmTMB(N1~Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
+mod3<-glmmTMB(N1~River.dist.lake*Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
+null<-glmmTMB(N1~1+ (1|O.NET),family=gaussian(),data=dd_specie)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3, null,weights = TRUE, sort = F)
+summary(mod6)
 ################################################################################################################################################################
 #FIGURES
 
