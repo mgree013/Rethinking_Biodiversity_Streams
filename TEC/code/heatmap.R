@@ -338,8 +338,16 @@ plot_grid(tec.bd.1,tec.n1.1,tec.bd.2,tec.n1.2,tec.bd.3,tec.n1.3,nrow=3)
 plot_grid(d.b1,d.e1,d.b2,d.e2,st.bd,st.n1,nrow=3)
 
 plot_grid(d.b1,d.e1,d.b2,d.e2,st_bd_,st_n1_,nrow=3)
+#Updated
+plot_grid(d.e1,d.b1,d.e2,d.b2,st_n1_,st_bd_,nrow=3)
+
 
 plot_grid(tec_bd1_,tec_n1_,tec_bd2_,tec_n2_,tec_bd3_,tec_n3_,nrow=3)
+plot_grid(p2,p5,p1,p4,p3,p6,ncol=2)
+
+#Updated
+plot_grid(tec_n1_,p5,tec_n2_,p4,tec_n3_,p6,nrow=3)
+plot_grid(tec_bd1_,p2,tec_bd2_,p1,tec_bd3_,p3,nrow=3)
 
 
 #############################################################################################################################
@@ -372,7 +380,7 @@ st_n1<-read.csv("st.n1.csv")
 st_n1_<-ggplot(data=st_n1,aes(x = est.River.dist.lake, y = est.Head.river.dist,z=est.n1))+ 
   geom_point(aes(x = River.dist.lake, y = Head.river.dist, colour=SD))+
   geom_contour(aes(colour = after_stat(level)), size=1)+
-  ggtitle("f)") +
+  ggtitle("e)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(x = "Log Distance below Upstream Lakes (m)", 
        y = "Log Distance from Headwaters (m)", 
@@ -392,7 +400,7 @@ st_bd<-read.csv("st.bd.csv")
 st_bd_<-ggplot(data=st_bd,aes(x = est.River.dist.lake, y = est.Head.river.dist,z=est.beta))+ 
   geom_point(aes(x = River.dist.lake, y = Head.river.dist, colour=BD))+
   geom_contour(aes(colour = after_stat(level)), size=1)+
-  ggtitle("e)") +
+  ggtitle("f)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(x = "Log Distance below Upstream Lakes (m)", 
        y = "Log Distance from Headwaters (m)", 
@@ -413,7 +421,7 @@ st_bd_<-ggplot(data=st_bd,aes(x = est.River.dist.lake, y = est.Head.river.dist,z
 tec_n1_<-ggplot(data=tec_n1,aes(x = est.E_PC1, y = est.Com.Size.Gradient,z=est.n1))+ 
   geom_point(aes(x = E_PC1, y = Com.Size.Gradient, colour=SD))+
   geom_contour(aes(colour = after_stat(level)))+
-  ggtitle("b)") +
+  ggtitle("a)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(x = "Environmental Gradient", 
        y = "Log Community Size", 
@@ -426,13 +434,13 @@ tec_n1_<-ggplot(data=tec_n1,aes(x = est.E_PC1, y = est.Com.Size.Gradient,z=est.n
   scale_color_viridis()
 
 #write.csv(prepplot01,"tec.n2.csv")
-#tec_n2<-read.csv("tec.n2.csv")
+tec_n2<-read.csv("Int_plot_data/tec.n21.csv")
 
 tec_n2_<-ggplot(data=tec_n2,aes(x = est.Spatial, y = est.Com.Size.Gradient,z=est.n1))+ 
   geom_point(aes(x = Spatial, y = Com.Size.Gradient, colour=SD))+
   geom_contour(aes(colour = after_stat(level)))+
-  ggtitle("d)") +
-  #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
+  ggtitle("c)") +
+  #geom_text_contour(aes(z = SD), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(x = "Spatial Gradient", 
        y = "Log Community Size", 
        z = "LCBD",level="LCBD") + 
@@ -450,7 +458,7 @@ tec_n2_<-ggplot(data=tec_n2,aes(x = est.Spatial, y = est.Com.Size.Gradient,z=est
 tec_n3_<-ggplot(data=tec_n3,aes(x = est.Spatial, y = est.E_PC1,z=est.n1))+ 
   geom_point(aes(x = Spatial, y = E_PC1, colour=SD))+
   #geom_contour(aes(colour = after_stat(level)))+
-  ggtitle("f)") +
+  ggtitle("e)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(x = "Spatial Gradient", 
        y = "Environmental Gradient", 

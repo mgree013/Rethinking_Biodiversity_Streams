@@ -405,7 +405,7 @@ plot_grid(g1,g4, ncol=2)
 p1<-all_big_dat%>%
   #filter(Head.river.dist>3)%>%
   ggplot(aes(x = E_PC1, y =betas.LCBD )) + 
-  ggtitle("c)") +#remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
+  ggtitle("d)") +#remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
@@ -420,7 +420,7 @@ p1<-all_big_dat%>%
 p2<-all_big_dat%>%
   #filter(Head.river.dist>3)%>%
   ggplot(aes(x = Spatial, y =betas.LCBD )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  ggtitle("a)") +
+  ggtitle("b)") +
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
@@ -435,7 +435,7 @@ p2<-all_big_dat%>%
 p3<-all_big_dat%>%
   #filter(Head.river.dist>3)%>%
   ggplot(aes(x = log(Com.Size+1), y =betas.LCBD )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  ggtitle("e)") +
+  ggtitle("f)") +
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
@@ -540,63 +540,68 @@ pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 ################################################################################################################
 #GLMM's
 
-mod1<-lmer(betas.LCBD~Spatial+ (1|O.NET), data=all_big_dat)
-mod2<-lmer(betas.LCBD~E_PC1+ (1|O.NET),data=all_big_dat)
-mod3<-lmer(betas.LCBD~Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
-mod4<-lmer(betas.LCBD~Spatial*E_PC1+ (1|O.NET),data=all_big_dat)
-mod5<-lmer(betas.LCBD~Spatial*Com.Size.Gradient+ (1|O.NET), data=all_big_dat)
-mod6<-lmer(betas.LCBD~E_PC1*Com.Size.Gradient+ (1|O.NET), data=all_big_dat)
-mod7<-lmer(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),data=all_big_dat)
-null<-lmer(betas.LCBD~1+ (1|O.NET),data=all_big_dat)
+mod1<-glmer(betas.LCBD~Spatial+ (1|O.NET),family=gaussian(link = "identity"), data=all_big_dat)
+mod2<-glmer(betas.LCBD~E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod3<-glmer(betas.LCBD~Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod4<-glmer(betas.LCBD~Spatial*E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod5<-glmer(betas.LCBD~Spatial*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"), data=all_big_dat)
+mod6<-glmer(betas.LCBD~E_PC1*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"), data=all_big_dat)
+mod7<-glmer(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+null<-glmer(betas.LCBD~ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6,mod7, null,weights = TRUE, sort = FALSE)
-summary(mod6)
+
+# Model selection
+cand.mod.names <- c("mod1", "mod2", "mod3", "mod4","mod5","mod6","mod7","null") 
+cand.mods <- list( ) 
+library(AICcmodavg)
+# This function fills the list by model names
+for(i in 1:length(cand.mod.names)) {
+  cand.mods[[i]] <- get(cand.mod.names[i]) }
+
+# Function aictab does the AICc-based model comparison
+print(aictab(cand.set = cand.mods, 
+             modnames = cand.mod.names))
+
+library(glmmTMB)
+mod1<-glmmTMB(betas.LCBD~Spatial+ (1|O.NET),family=beta_family(), data=all_big_dat)
+mod2<-glmmTMB(betas.LCBD~E_PC1+ (1|O.NET),family=beta_family(),data=all_big_dat)
+mod3<-glmmTMB(betas.LCBD~Com.Size.Gradient+ (1|O.NET),ziformula=~1,family=beta_family(),data=all_big_dat)
+mod4<-glmmTMB(betas.LCBD~Spatial*E_PC1+ (1|O.NET),ziformula=~1,family=beta_family(),data=all_big_dat)
+mod5<-glmmTMB(betas.LCBD~Spatial*Com.Size.Gradient+ (1|O.NET),ziformula=~1,family=beta_family(), data=all_big_dat)
+mod6<-glmmTMB(betas.LCBD~E_PC1*Com.Size.Gradient+ (1|O.NET),ziformula=~1,family=beta_family(), data=all_big_dat)
+mod7<-glmmTMB(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),ziformula=~1,family=beta_family(),data=all_big_dat)
+null<-glmmTMB(betas.LCBD~ (1|O.NET),ziformula=~1,family=beta_family(),data=all_big_dat)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6, null,weights = TRUE, sort = FALSE)
+
+glmmTMB(betas.LCBD~ (1|O.NET),ziformula=~1,data=dd,family=beta_family())
+reported.table<- aictab(mod1,mod2,mod3,mod4,mod5,mod6,mod7,)
+summary(null)
 fixef(mod6)
 VarCorr(mod6)
-r.squaredGLMM(mod4)
+r.squaredGLMM(null)
+AIC(mod4)
 
-mod1<-lmer(N1~Spatial+ (1|O.NET),data=all_big_dat)
-mod2<-lmer(N1~E_PC1+ (1|O.NET),data=all_big_dat)
-mod3<-lmer(N1~Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
-mod4<-lmer(N1~Spatial*E_PC1+ (1|O.NET),data=all_big_dat)
-mod5<-lmer(N1~Spatial*Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
-mod6<-lmer(N1~E_PC1*Com.Size.Gradient+ (1|O.NET),data=all_big_dat)
-mod7<-lmer(N1~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),data=all_big_dat)
-null<-lmer(N1~1+ (1|O.NET),data=all_big_dat)
+mod1<-glmer(N1~Spatial+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod2<-glmer(N1~E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod3<-glmer(N1~Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod4<-glmer(N1~Spatial*E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod5<-glmer(N1~Spatial*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod6<-glmer(N1~E_PC1*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+mod7<-glmer(N1~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
+null<-glmer(N1~1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6,mod7, null,weights = TRUE, sort = FALSE)
 summary(mod6)
 
+mod1<-glmmTMB(N1~Spatial+ (1|O.NET),family=gaussian(), data=all_big_dat)
+mod2<-glmmTMB(N1~E_PC1+ (1|O.NET),family=gaussian(),data=all_big_dat)
+mod3<-glmmTMB(N1~Com.Size.Gradient+ (1|O.NET),ziformula=~1,family=gaussian(),data=all_big_dat)
+mod4<-glmmTMB(N1~Spatial*E_PC1+ (1|O.NET),ziformula=~1,family=gaussian(),data=all_big_dat)
+mod5<-glmmTMB(N1~Spatial*Com.Size.Gradient+ (1|O.NET),ziformula=~1,family=gaussian(), data=all_big_dat)
+mod6<-glmmTMB(N1~E_PC1*Com.Size.Gradient+ (1|O.NET),ziformula=~1,family=gaussian(), data=all_big_dat)
+mod7<-glmmTMB(N1~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),ziformula=~1,family=gaussian(),data=all_big_dat)
+null<-glmmTMB(N1~ (1|O.NET),ziformula=~1,family=gaussian(),data=all_big_dat)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6, null,weights = TRUE, sort = F)
 
-
-#LM's
-dog<-lm(betas.LCBD~E_PC1, data=all_big_dat)
-summary(dog)
-dog<-lm(betas.LCBD~Spatial, data=all_big_dat)
-summary(dog)
-dog<-lm(betas.LCBD~log(Com.Size+1), data=all_big_dat)
-summary(dog)
-dog<-lm(betas.LCBD~log(Com.Size+1)*Spatial*E_PC1, data=all_big_dat)
-summary(dog)
-dog<-lm(betas.LCBD~log(Com.Size+1)*Spatial, data=all_big_dat)
-summary(dog)
-dog<-lm(betas.LCBD~E_PC1*Spatial, data=all_big_dat)
-summary(dog)
-dog<-lm(betas.LCBD~E_PC1*log(Com.Size+1), data=all_big_dat)
-summary(dog)
-
-dog<-lm(N1~E_PC1, data=all_big_dat)
-summary(dog)
-dog<-lm(N1~Spatial, data=all_big_dat)
-summary(dog)
-dog<-lm(N1~log(Com.Size+1), data=all_big_dat)
-summary(dog)
-dog<-lm(N1~Com.Size.Gradient*Spatial*E_PC1, data=all_big_dat)
-summary(dog)
-dog<-lm(N1~log(Com.Size+1)*Spatial, data=all_big_dat)
-summary(dog)
-dog<-lm(N1~E_PC1*Spatial, data=all_big_dat)
-summary(dog)
-dog<-lm(N1~E_PC1*log(Com.Size+1), data=all_big_dat)
-summary(dog)
 
 
 #Nww  Stuff

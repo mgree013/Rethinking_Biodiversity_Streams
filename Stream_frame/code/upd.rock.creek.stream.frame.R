@@ -192,7 +192,7 @@ d.b1<-dd_specie%>%
   #filter(Head.river.dist >3)%>%
   #filter(Network != "BUBBS" &O.NET != "KERN")%>%
   ggplot(aes(x = River.dist.lake, y = betas.LCBD)) + geom_point()+
-  ggtitle("a)") +
+  ggtitle("b)") +
   #stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)+
   #geom_smooth(method = "lm", se=F)+ 
   xlab(" Log Distance below Upstream Lakes (m)") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+theme_bw() +
@@ -206,7 +206,7 @@ d.b2<-dd_specie%>%
   #filter(Head.river.dist >3)%>%
   #filter(Network != "BUBBS" &O.NET != "KERN")%>%
   ggplot(aes(x = (Head.river.dist), y = betas.LCBD)) + geom_point()+
-  ggtitle("c)") +
+  ggtitle("d)") +
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   # geom_smooth(method = "lm", se=F)+ 
   xlab(" Log Distance from Headwaters (m)") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+theme_bw() +
@@ -221,7 +221,7 @@ d.e1<-dd_specie%>%
   #filter(Head.river.dist >3)%>%
   #filter(Network != "BUBBS" &O.NET != "KERN")%>%
   ggplot(aes(x = River.dist.lake, y = N1)) + geom_point()+
-  ggtitle("b)") +
+  ggtitle("a)") +
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm", se=F)+ 
   xlab(" Log Distance below Upstream Lakes (m)") +labs(y=(("Shannon Diversity")))+theme_bw() +
@@ -235,7 +235,7 @@ d.e2<-dd_specie%>%
   #filter(Head.river.dist >3)%>%
   #filter(Network != "BUBBS" &O.NET != "KERN")%>%
   ggplot(aes(x = Head.river.dist, y = N1)) + 
-  ggtitle("d)") +
+  ggtitle("c)") +
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm", se=F)+ 
