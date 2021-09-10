@@ -190,8 +190,14 @@ null<-glmmTMB(betas.LCBD~1+ (1|O.NET),family=beta_family(),data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
 r2(mod1)
 r2(mod2)
-r2(mod3)
+r2(mod5)
 r2(null)
+summary(mod1)
+MuMIn::r.squaredLR(mod3)
+performance::r2_nakagawa(mod3)
+install.packages(DHARMa)
+library(DHARMa)
+simulateResiduals(fittedModel = mod3, plot = T)
 
 mod1<-glmmTMB(N1~River.dist.lake+ (1|O.NET),family=gaussian(), data=dd_specie)
 mod2<-glmmTMB(N1~Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
@@ -199,6 +205,9 @@ mod3<-glmmTMB(N1~River.dist.lake*Head.river.dist+ (1|O.NET),family=gaussian(),da
 null<-glmmTMB(N1~1+ (1|O.NET),family=gaussian(),data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3, null,weights = TRUE, sort = F)
 summary(mod6)
+
+cor(dd_specie$River.dist.lake,dd_specie$Head.river.dist)
+ggplot(dd_specie, aes(x=River.dist.lake,y=Head.river.dist))+geom_point()+geom_smooth(method="lm")
 ################################################################################################################################################################
 #FIGURES
 
