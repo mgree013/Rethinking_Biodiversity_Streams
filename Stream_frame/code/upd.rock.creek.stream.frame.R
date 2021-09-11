@@ -198,6 +198,7 @@ performance::r2_nakagawa(mod3)
 install.packages(DHARMa)
 library(DHARMa)
 simulateResiduals(fittedModel = mod3, plot = T)
+hist(dd_specie$betas.LCBD)
 
 mod1<-glmmTMB(N1~River.dist.lake+ (1|O.NET),family=gaussian(), data=dd_specie)
 mod2<-glmmTMB(N1~Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)

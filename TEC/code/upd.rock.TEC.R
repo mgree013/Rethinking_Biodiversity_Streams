@@ -543,28 +543,6 @@ pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 ################################################################################################################
 #GLMM's
 
-mod1<-glmer(betas.LCBD~Spatial+ (1|O.NET),family=gaussian(link = "identity"), data=all_big_dat)
-mod2<-glmer(betas.LCBD~E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod3<-glmer(betas.LCBD~Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod4<-glmer(betas.LCBD~Spatial*E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod5<-glmer(betas.LCBD~Spatial*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"), data=all_big_dat)
-mod6<-glmer(betas.LCBD~E_PC1*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"), data=all_big_dat)
-mod7<-glmer(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-null<-glmer(betas.LCBD~ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6,mod7, null,weights = TRUE, sort = FALSE)
-
-# Model selection
-cand.mod.names <- c("mod1", "mod2", "mod3", "mod4","mod5","mod6","mod7","null") 
-cand.mods <- list( ) 
-library(AICcmodavg)
-# This function fills the list by model names
-for(i in 1:length(cand.mod.names)) {
-  cand.mods[[i]] <- get(cand.mod.names[i]) }
-
-# Function aictab does the AICc-based model comparison
-print(aictab(cand.set = cand.mods, 
-             modnames = cand.mod.names))
-
 mod1<-glmmTMB(betas.LCBD~Spatial+ (1|O.NET),family=beta_family(), data=all_big_dat)
 mod2<-glmmTMB(betas.LCBD~E_PC1+ (1|O.NET),family=beta_family(),data=all_big_dat)
 mod3<-glmmTMB(betas.LCBD~Com.Size.Gradient+ (1|O.NET),family=beta_family(),data=all_big_dat)
@@ -584,16 +562,6 @@ performance::r2(mod1)
 r2_nakagawa(mod7)
 performance::check_singularity(mod1)
 
-mod1<-glmer(N1~Spatial+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod2<-glmer(N1~E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod3<-glmer(N1~Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod4<-glmer(N1~Spatial*E_PC1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod5<-glmer(N1~Spatial*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod6<-glmer(N1~E_PC1*Com.Size.Gradient+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-mod7<-glmer(N1~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-null<-glmer(N1~1+ (1|O.NET),family=gaussian(link = "identity"),data=all_big_dat)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6,mod7, null,weights = TRUE, sort = FALSE)
-summary(mod6)
 
 mod1<-glmmTMB(N1~Spatial+ (1|O.NET),family=gaussian(), data=all_big_dat)
 mod2<-glmmTMB(N1~E_PC1+ (1|O.NET),family=gaussian(),data=all_big_dat)
