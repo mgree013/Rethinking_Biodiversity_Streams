@@ -13,6 +13,7 @@ library(adespatial)
 library(betapart)
 library(cowplot)
 library(ggbiplot)
+library(piecewiseSEM)
 
 setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH")
 

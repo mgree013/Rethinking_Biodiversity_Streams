@@ -553,7 +553,7 @@ mod7<-glmmTMB(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+ (1|O.NET),family=beta_
 null<-glmmTMB(betas.LCBD~ (1|O.NET),family=beta_family(),data=all_big_dat)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6, null,weights = TRUE, sort = FALSE)
 r2(mod1,tolerance = 1e-10)
-summary(mod1)
+summary(mod7)
 fixef(mod6)
 VarCorr(mod6)
 r.squaredGLMM(null)
