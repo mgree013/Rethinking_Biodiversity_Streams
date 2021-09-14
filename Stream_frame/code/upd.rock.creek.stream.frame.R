@@ -1,39 +1,33 @@
 #paper title: Rethinking Biodiversity in Stream Ecology Frameworks
 #Part 1 of Analysis: Stream Biodiversity Frameworks
 #Author: Matthew Douglas Green
-#Date: May 5,2020
+#Date: Sept 14,2021
 ########################################################################################################################
 #load Libraries
-library(vegan)
-library(tidyverse)
-library(dplyr)
-library(adespatial)
-library(MuMIn)
-library(gridExtra)
-library(gtable)
-library(grid)
-library(cowplot)
-library(betareg)
-library(piecewiseSEM)
+Packages <- c("grid","gtable","gridExtra","dplyr","insight","performance","piecewiseSEM","betareg","adespatial","tidyverse","vegan","olsrr","semPlot","lavaan","lme4","vegan", "ggplot2", "tidyverse", "ape","MuMIn","adespatial", "betapart", "cowplot","glmmTMB")
+lapply(Packages, library, character.only = TRUE)
+library(ggbiplot)
 
+##############################################################################################################
+#Read data and clean
 species<-read.csv(file = "Stream_frame/data/sp.density.update.12.28.19.csv", row.name=1)
 env <-read.csv(file = "Stream_frame/data/dave.matt.env.all.csv", row.name=1)
 summary(env)
 
-#resolved SPecies list now
+#resolved Species list now
 species<-species%>%dplyr::select(-c(Chironomidae,Arachnida,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 
+#Re-scale environmental parameters
 env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist))
 
-#Calcualte diversity and bind with envrioemtnal data, remove network if necessary
+#########################################################################################################################
+#Calculate diversity and bind with environmental data, remove network if necessary
 diversity<-species%>%
   #group_by(Site,Network)%>%
   transmute(N0=rowSums(species > 0),H= diversity(species),N1 =exp(H),N2 =diversity(species, "inv"),J= H/log(N0),E10= (N1/N0),E20= (N2/N0),Com.Size=rowSums(species)) #,betas.LCBD=beta.div(species, method="hellinger",sqrt.D=TRUE)$LCBD ,betas.LCBD.p=beta.div(species, method="chord",sqrt.D=TRUE)$p.LCBD )
 
 
-
-#Calc Beta Diversity (LCBD) for each network
-
+#Calculate Beta Diversity (LCBD) for each network
 combine<-cbind(species,env$O.NET)
 
 kern<-subset(combine, `env$O.NET`=="KERN")
@@ -72,33 +66,6 @@ all<-cbind(diversity,betas.LCBD, env)
 specie<-all
 ###########################################################################################
 #species Richness for each Network
-
-##########################################################################################################
-specie%>%
-  filter(Head.river.dist>3)%>%
-  gather(N0, N1, E10, betas.LCBD, key = "var", value = "value") %>% 
-  ggplot(aes(x =(Head.river.dist), y = value)) + #remove , fill=Network and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_point()+
-  geom_smooth(method = "lm")+
-  facet_wrap( ~var  , scales = "free") +
-  theme_bw()
-
-specie%>%
-  gather(N0, N1, E10, betas.LCBD, key = "var", value = "value") %>% 
-  ggplot(aes(x = log(Size.net.dist), y = value,colour=O.NET)) + #remove , fill=Network and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_point()+
-  geom_smooth(method = "lm")+
-  facet_grid( var ~ O.NET, scales = "free") +
-  theme_bw()
-
-specie%>%
-  gather(N0,key = "var", value = "value") %>% 
-  summarise(N0=sum)%>%
-  ggplot(aes(x = Network, y = value,colour=Network)) + #remove , fill=Network and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_boxplot()
-facet_grid( var ~ Network, scales = "free") +
-  theme_bw()
-
 specieaa<-cbind(env$O.NET,env$Network,species)
 
 d<-species%>%
@@ -118,22 +85,8 @@ d<-species%>%
   filter( Network != "UP.KERN" & Network != "YOUNG")%>%
   select(-c(Network))
 
-bubb<-d%>%filter( O.NET == "BUBBS")%>%select(-c(O.NET))
-cas<-d%>%filter( O.NET == "CASCADE")%>%select(-c(O.NET))
-evo<-d%>%filter( O.NET == "EVO")%>%select(-c(O.NET))
-ker<-d%>%filter( O.NET == "KERN")%>%select(-c(O.NET))
-
-
-b.betas.LCBD=beta.div(bubb, method="hellinger",sqrt.D=TRUE)
-c.betas.LCBD=beta.div(cas, method="hellinger",sqrt.D=TRUE)
-e.betas.LCBD=beta.div(evo, method="hellinger",sqrt.D=TRUE)
-k.betas.LCBD=beta.div(ker, method="hellinger",sqrt.D=TRUE)
-
-b<-subset(d[,2:149], O.NET=="BUBBS")
-
-
 ############################################################################################################################################################################################
-#GLMS
+#1)GLMS
 dd_specie<-specie%>%filter(River.dist.lake>0)%>%filter(Head.river.dist>2.5)
 
 qqnorm(log(specie$betas.LCBD))
@@ -143,7 +96,6 @@ wilcox.test(log(specie$betas.LCBD))
 qqnorm((specie$N1))
 qqline((specie$N1))
 wilcox.test((specie$N1))
-
 
 mod1<-glm(N1~(River.dist.lake),family=gaussian(link = "identity"),data=dd_specie)
 mod2<-glm(N1~(Head.river.dist),family=gaussian(link = "identity"),data=dd_specie)
@@ -184,6 +136,8 @@ mod5<-betareg(betas.LCBD~River.dist.lake*Head.river.dist,link = "logit",data=dd_
 null<-betareg(betas.LCBD~1,link = "logit",data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
 
+
+#2)Mixed Models
 mod1<-lmer(betas.LCBD~River.dist.lake+ (1|O.NET), data=dd_specie)
 mod2<-lmer(betas.LCBD~Head.river.dist+ (1|O.NET),data=dd_specie)
 mod3<-lmer(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),data=dd_specie)
@@ -204,11 +158,7 @@ r2(mod3)
 r2(null)
 summary(mod3)
 performance::r2_nakagawa(null,tolerance = 0)
-library(glmmTMB)
 hist(dd_specie$betas.LCBD)
-devtools::install_github("glmmTMB/glmmTMB/glmmTMB")
-my_rsq(mod3)
-cod(mod3)
 
 
 mod1<-glmmTMB(N1~River.dist.lake+ (1|O.NET),family=gaussian(), data=dd_specie)
@@ -397,13 +347,3 @@ g4<-e2%>%
 
 
 plot_grid(g1,g4, ncol=2)
-
-all_big_dat%>%
-  gather(E_PC1,Spatial, Com.Size.Gradient,key = "var", value = "value") %>% 
-  ggplot(aes(x = log(Head.river.dist+1), y = value)) + geom_point() +geom_smooth(method = "lm")+
-  facet_wrap(~ var, scales = "free") + theme_bw()
-
-all_big_dat%>%
-  gather(E_PC1,Spatial, Com.Size.Gradient,key = "var", value = "value") %>% 
-  ggplot(aes(x = log(River.dist.lake+1), y = value)) + geom_point() +geom_smooth(method = "lm")+
-  facet_wrap(~ var, scales = "free") + theme_bw()

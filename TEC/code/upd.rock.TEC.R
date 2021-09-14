@@ -1,5 +1,9 @@
+#paper title: Rethinking Biodiversity in Stream Ecology Frameworks
 #Part 2 Applied TEC Framework
+#Author: Matthew Douglas Green
+#Date: Sept 14,2021
 
+########################################################################################################################
 #load packages
 Packages <- c("olsrr","semPlot","lavaan","MuMIn","lme4","vegan", "ggplot2", "tidyverse", "ape","MuMIn","adespatial", "betapart", "cowplot")
 lapply(Packages, library, character.only = TRUE)
@@ -8,7 +12,8 @@ library(insight)
 library(performance)
 library(glmmTMB)
 
-#Open Data
+########################################################################################################################
+#Open Data and Clean
 setwd("~/Dropbox/Users/matthewdouglasgreen/Dropbox/Manuscipts/L-S Biodviersity Streams_RCC_SDH")
 getwd()
 species<-read.csv(file= "TEC/data/sp.density.update.12.28.19.csv", row.name=1)
@@ -20,8 +25,8 @@ summary(env)
 species<-species%>%dplyr::select(-c(Arachnida,Chironomidae,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 #env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist),Size.net.dist=Head.river.dist*Up.Lake.area,Size.river.dist=River.dist.lake*Up.Lake.area,Elev.dist=River.dist.lake/Elevation)
 
-
-#Calcualte diversity and bind with envrioemtnal data, remove network if necessary
+########################################################################################################################
+#Calculate diversity and bind with environmental data, remove network if necessary
 
 #aa%>%column_to_rownames("site")
 Sites<-as.data.frame(rownames(all))
@@ -35,7 +40,6 @@ rownames(diversity)<-rownames(species)
 diversity<-diversity%>%rownames_to_column("site")
 env<-env%>%rownames_to_column("site")
 species<-species%>%rownames_to_column("site")
-#aa<-aa%>%rownames_to_column("site")
 
 all<-left_join(species,env, by="site")
 all<-left_join(all,diversity, by="site")
@@ -63,8 +67,10 @@ Bubb<-Bubb%>%rownames_to_column("Site")%>%
   filter(Site !=	"	Outlet.Vidette.below.20012")%>%
   column_to_rownames("Site")
 
+########################################################################################################################
+#PCA's Gradients of Spatial and Environment
 
-#Cascade
+#1)Cascade
 spatials<-Casc%>%dplyr::select(c(Head.river.dist, River.dist.lake, Up.Lake.area, Elevation))
 envs<-Casc%>%dplyr::select(c(Temp,Chlorophyll.mean,Conductivity,DO,pH,Discharge.Mean,SHRUB_SCRUB,EVERGREEN_FOREST))
 
@@ -111,7 +117,7 @@ casc_all_dat<-casc_all_dat%>%
 #Patterns of diversity acrosds environmental, spatial and communtiy size gradients
 
 ################################################################################################################
-#EVO
+#2)EVO
 spatials<-Evo%>%dplyr::select(c(Head.river.dist, River.dist.lake, Up.Lake.area, Elevation))
 envs<-Evo%>%dplyr::select(c(Temp,Chlorophyll.mean,Conductivity,DO,pH,Discharge.Mean,SHRUB_SCRUB))
 
@@ -157,7 +163,7 @@ evo_all_dat
 evo_all_dat<-evo_all_dat%>%
   mutate(Spatial=-1*S_PC1)
 ################################################################################################################
-#Bubb
+#3) Bubb
 spatials<-Bubb%>%dplyr::select(c(Head.river.dist, River.dist.lake, Up.Lake.area, Elevation))
 envs<-Bubb%>%dplyr::select(c(Temp,Chlorophyll.mean,Conductivity,DO,pH,Discharge.Mean,SHRUB_SCRUB,EVERGREEN_FOREST))
 
@@ -203,7 +209,7 @@ bubb_all_dat
 bubb_all_dat<-bubb_all_dat%>%
   mutate(Spatial=S_PC1)
 ################################################################################################################
-#Rock
+#4) Rock
 spatials<-Rock%>%dplyr::select(c(Head.river.dist, River.dist.lake, Up.Lake.area, Elevation))
 envs<-Rock%>%dplyr::select(c(Temp,Chlorophyll.mean,Conductivity,DO,pH,Discharge.Mean,SHRUB_SCRUB,EVERGREEN_FOREST))
 
@@ -251,6 +257,7 @@ Rock_all_dat<-Rock_all_dat%>%
 
 
 ###################################################################################################################################################################################################
+#Combine PCA's with Diversity data and Species pool
 all_big_dat<-rbind(bubb_all_dat,evo_all_dat,casc_all_dat,Rock_all_dat)
 all_big_dat$Reg.Pool<-if_else(all_big_dat$O.NET =="BUBBS","88", 
                               if_else(all_big_dat$O.NET =="EVO","39",
@@ -265,146 +272,8 @@ all_big_dat%>%
   ggplot(aes(x=Reg.Pool,y=betas.LCBD, fill=O.NET))+
   geom_boxplot()
 
-new_labels <- c( "Com.Size.Gradient" = "Community Size Gradient","S_PC1" = "Spatial Gradient", "E_PC1" = "Environmental Gradient")
-
-e6<-all_big_dat%>%
-  pivot_longer(c(Com.Size.Gradient,S_PC1,E_PC1) , names_to = "key", values_to = "value")
-summary(e2)
-
-g1<-e6%>% 
-  ggplot(aes(x = value, y =betas.LCBD, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="EVO" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="ROCK" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e6, O.NET =="EVO" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="ROCK" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
-  geom_point(data = filter(e6, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="ROCK" & key=="Com.Size.Gradient"), shape=1)+
-  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
-  #geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="S_PC1"), method = "lm")+
-  geom_smooth(data=filter(e6,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
-  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="Com.Size.Gradient"), method = "lm")+
-  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
-  ylab("Local Contribution to Beta Diversity (LCBD)")+
-  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
-  theme_bw()+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_rect(colour = "black"))+
-  theme(legend.position = "none")
-
-g4<-e6%>% 
-  ggplot(aes(x = value, y =N1, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="EVO" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="ROCK" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e6, O.NET =="EVO" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="ROCK" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
-  geom_point(data = filter(e6, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=1)+
-  geom_point(data = filter(e6, O.NET =="ROCK" & key=="Com.Size.Gradient"), shape=1)+
-  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
-  #geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="S_PC1"), method = "lm")+
-  geom_smooth(data=filter(e6,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
-  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
-  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="Com.Size.Gradient"), method = "lm")+
-  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
-  ylab("Species Diversity")+
-  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
-  theme_bw()+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_rect(colour = "black"))+
-  theme(legend.position = "none")
-
-g2<-e2%>% 
-  ggplot(aes(x = value, y =N0, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="EVO" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="EVO" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=1)+
-  #geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
-  #geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e2,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
-  geom_smooth(data=filter(e2,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e2,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
-  geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
-  #geom_smooth(data=filter(e2,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
-  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
-  ylab("Species Richness")+
-  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
-  theme_bw()+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_rect(colour = "black"))+
-  theme(legend.position = "none")
-
-
-g3<-e2%>% 
-  ggplot(aes(x = value, y =E10, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
-  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="EVO" & key=="S_PC1"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="E_PC1"), shape=1)+
-  geom_point(data = filter(e2, O.NET =="EVO" & key=="E_PC1"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
-  geom_point(data = filter(e2, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=19)+
-  #geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
-  #geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
-  geom_smooth(data=filter(e2,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e2,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data=filter(e2,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
-  #geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
-  geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
-  geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
-  geom_smooth(data=filter(e2,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
-  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
-  ylab("Species Evenness")+
-  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
-  theme_bw()+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_rect(colour = "black"))+
-  theme(legend.position = "none")
-
-plot_grid(g1,g2,g3, ncol=3)
-plot_grid(g1,g4, ncol=2)
-
 ####################################################################################################################################################################################
-#opt.2
+#Plotting
 p1<-all_big_dat%>%
   #filter(Head.river.dist>3)%>%
   ggplot(aes(x = E_PC1, y =betas.LCBD )) + 
@@ -578,7 +447,7 @@ r.squaredGLMM(mod7)
 AIC(mod6)
 performance::r2(mod6)
 
-
+########################################################################################################################################################################
 #Nww  Stuff
 
 #Gaussian dist
@@ -662,6 +531,17 @@ all_big_dat%>%
         panel.border = element_rect(colour = "black"))+
   facet_grid(~O.NET)
 
+all_big_dat%>%
+  gather(E_PC1,Spatial, Com.Size.Gradient,key = "var", value = "value") %>% 
+  ggplot(aes(x = log(Head.river.dist+1), y = value)) + geom_point() +geom_smooth(method = "lm")+
+  facet_wrap(~ var, scales = "free") + theme_bw()
+
+all_big_dat%>%
+  gather(E_PC1,Spatial, Com.Size.Gradient,key = "var", value = "value") %>% 
+  ggplot(aes(x = log(River.dist.lake+1), y = value)) + geom_point() +geom_smooth(method = "lm")+
+  facet_wrap(~ var, scales = "free") + theme_bw()
+
+########################################################################################################################################################################
 #SEMS
 summary(all_big_dat$Spatial)
 summary(all_big_dat$E_PC1)
@@ -754,3 +634,143 @@ semPaths(smod1.fit, what='std', layout = "tree3", intercepts = FALSE, residuals 
          edge.label.cex=1.25, curvePivot = FALSE,  fade=FALSE, rotation = 2)
 
 
+
+########################################################################################################################################################################
+#Old figs
+new_labels <- c( "Com.Size.Gradient" = "Community Size Gradient","S_PC1" = "Spatial Gradient", "E_PC1" = "Environmental Gradient")
+
+e6<-all_big_dat%>%
+  pivot_longer(c(Com.Size.Gradient,S_PC1,E_PC1) , names_to = "key", values_to = "value")
+summary(e2)
+
+g1<-e6%>% 
+  ggplot(aes(x = value, y =betas.LCBD, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
+  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="EVO" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="ROCK" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e6, O.NET =="EVO" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="ROCK" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
+  geom_point(data = filter(e6, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="ROCK" & key=="Com.Size.Gradient"), shape=1)+
+  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
+  #geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="S_PC1"), method = "lm")+
+  geom_smooth(data=filter(e6,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
+  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="Com.Size.Gradient"), method = "lm")+
+  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
+  ylab("Local Contribution to Beta Diversity (LCBD)")+
+  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(colour = "black"))+
+  theme(legend.position = "none")
+
+g4<-e6%>% 
+  ggplot(aes(x = value, y =N1, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
+  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="EVO" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="ROCK" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e6, O.NET =="EVO" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="ROCK" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
+  geom_point(data = filter(e6, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=1)+
+  geom_point(data = filter(e6, O.NET =="ROCK" & key=="Com.Size.Gradient"), shape=1)+
+  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
+  #geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="S_PC1"), method = "lm")+
+  geom_smooth(data=filter(e6,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data = filter(e6, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
+  geom_smooth(data=filter(e6,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
+  #geom_smooth(data=filter(e6,O.NET=="ROCK"& key=="Com.Size.Gradient"), method = "lm")+
+  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
+  ylab("Species Diversity")+
+  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(colour = "black"))+
+  theme(legend.position = "none")
+
+g2<-e2%>% 
+  ggplot(aes(x = value, y =N0, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
+  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="EVO" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="EVO" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=1)+
+  #geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
+  #geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e2,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
+  geom_smooth(data=filter(e2,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e2,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
+  geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
+  #geom_smooth(data=filter(e2,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
+  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
+  ylab("Species Richness")+
+  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(colour = "black"))+
+  theme(legend.position = "none")
+
+
+g3<-e2%>% 
+  ggplot(aes(x = value, y =E10, colour=O.NET )) + #remove , fill=O.NET and see what the grpah looks like, are there t#F8766Dns that both entowrks share together
+  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="S_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="EVO" & key=="S_PC1"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="E_PC1"), shape=1)+
+  geom_point(data = filter(e2, O.NET =="EVO" & key=="E_PC1"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="CASCADE" & key=="Com.Size.Gradient"), shape=19)+
+  geom_point(data = filter(e2, O.NET =="EVO" & key=="Com.Size.Gradient"), shape=19)+
+  #geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="S_PC1"),method="lm")+
+  #geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="S_PC1"), method = "lm")+
+  geom_smooth(data=filter(e2,O.NET=="EVO"& key=="S_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e2,O.NET=="BUBBS"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data=filter(e2,O.NET=="EVO"& key=="E_PC1"), method = "lm")+
+  #geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="E_PC1"), method = "lm")+
+  geom_smooth(data = filter(e2, O.NET =="BUBBS" & key=="Com.Size.Gradient"),method="lm")+
+  geom_smooth(data=filter(e2,O.NET=="CASCADE"& key=="Com.Size.Gradient"), method = "lm")+
+  geom_smooth(data=filter(e2,O.NET=="EVO"& key=="Com.Size.Gradient"), method = "lm")+
+  facet_grid(O.NET~key,scales="free_x", labeller =labeller(key= new_labels)) + #axis.title.x+
+  ylab("Species Evenness")+
+  xlab("   Log Com. Size         Env. Gradeint (E_PC1)     Spa. Gradient (S_PC1)")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(colour = "black"))+
+  theme(legend.position = "none")
+
+plot_grid(g1,g2,g3, ncol=3)
+plot_grid(g1,g4, ncol=2)
