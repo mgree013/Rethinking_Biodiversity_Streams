@@ -471,15 +471,68 @@ cor(all_big_dat$River.dist.lake,all_big_dat$Com.Size.Gradient, method = "pearson
 cor(all_big_dat$River.dist.lake,all_big_dat$Spatial, method = "pearson")
 cor(all_big_dat$River.dist.lake,all_big_dat$E_PC1, method = "pearson")
 
-all_big_dat%>%
+#Supplemtary Figure 1:
+  
+s1<-all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
-  gather(E_PC1,Spatial,Com.Size.Gradient, key = "var", value = "value") %>%
-  ggplot(aes(x=log(Head.river.dist+1),y=value))+
+  ggplot(aes(x=log(Head.river.dist+1),y=E_PC1))+
   geom_point()+
-  geom_smooth(method = "lm",se=F)+ xlab("Distance from Headwaters (m)")+
-  facet_wrap(~var,scales="free")+theme_bw()+theme(panel.grid.major = element_blank(),
+  ggtitle("a)") +
+  geom_smooth(method = "lm",se=F)+ xlab("Distance from Headwaters (m)")+ylab("Environmental Gradient")+
+  theme_bw()+theme(panel.grid.major = element_blank(),
                                                   panel.grid.minor = element_blank(),
                                                   panel.border = element_rect(colour = "black"))
+s2<-all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  ggplot(aes(x=log(Head.river.dist+1),y=Spatial))+
+  geom_point()+
+  ggtitle("b)") +
+  geom_smooth(method = "lm",se=F)+ xlab("Distance from Headwaters (m)")+ylab("Spatial Gradient")+
+  theme_bw()+theme(panel.grid.major = element_blank(),
+                                                  panel.grid.minor = element_blank(),
+                                                  panel.border = element_rect(colour = "black"))
+
+s3<-all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  ggplot(aes(x=log(Head.river.dist+1),y=Com.Size.Gradient))+
+  geom_point()+
+  ggtitle("c)") +
+  #geom_smooth(method = "lm",se=F)+ 
+  xlab("Distance from Headwaters (m)")+ylab("Community Size Gradient")+
+  theme_bw()+theme(panel.grid.major = element_blank(),
+                                                  panel.grid.minor = element_blank(),
+                                                  panel.border = element_rect(colour = "black"))
+
+s4<-all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  ggplot(aes(x=log(River.dist.lake+1),y=E_PC1))+
+  geom_point()+
+  ggtitle("d)") +
+  #geom_smooth(method = "lm",se=F)+
+  xlab("Distance from Upstream Lakes (m)")+ylab("Environmental Gradient")+
+  theme_bw()+theme(panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank(),
+                   panel.border = element_rect(colour = "black"))
+s5<-all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  ggplot(aes(x=log(River.dist.lake+1),y=Spatial))+
+  geom_point()+
+  ggtitle("e)") +
+  geom_smooth(method = "lm",se=F)+xlab("Distance from Upstream Lakes (m)")+ylab("Spatial Gradient")+
+  theme_bw()+theme(panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank(),
+                   panel.border = element_rect(colour = "black"))
+
+s6<-all_big_dat%>%
+  filter(log(River.dist.lake+1) >0)%>%
+  ggplot(aes(x=log(River.dist.lake+1),y=Com.Size.Gradient))+
+  ggtitle("f)") +
+  geom_point()+
+  geom_smooth(method = "lm",se=F)+xlab("Distance from Upstream Lakes (m)")+ylab("Community Size Gradient")+
+  theme_bw()+theme(panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank(),
+                   panel.border = element_rect(colour = "black"))
+plot_grid(s1,s2,s3,s4,s5,s6, nrow=2)
 
 all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
@@ -493,7 +546,7 @@ all_big_dat%>%
 
 all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
-  gather(E_PC1,Spatial,Com.Size.Gradient,SHRUB_SCRUB,Chlorophyll.mean,Temp, Conductivity,  DO,   pH, Discharge.Mean, key = "var", value = "value") %>%
+  gather(SHRUB_SCRUB,Chlorophyll.mean,Temp, Conductivity,  DO,   pH, Discharge.Mean, key = "var", value = "value") %>%
   ggplot(aes(x=log(Head.river.dist+1),y=value))+
   geom_point()+
   geom_smooth(method = "lm",se=F)+xlab("Distance from Headwaters (m)")+
@@ -503,7 +556,7 @@ all_big_dat%>%
 
 all_big_dat%>%
   filter(log(River.dist.lake+1) >0)%>%
-  gather(E_PC1,Spatial,Com.Size.Gradient,SHRUB_SCRUB,Chlorophyll.mean,Temp, Conductivity,  DO,   pH, Discharge.Mean, key = "var", value = "value") %>%
+  gather(SHRUB_SCRUB,Chlorophyll.mean,Temp, Conductivity,  DO,   pH, Discharge.Mean, key = "var", value = "value") %>%
   ggplot(aes(x=log(River.dist.lake+1),y=value))+
   geom_point()+
   geom_smooth(method = "lm",se=F)+xlab("Distance from Upstream Lakes (m)")+
