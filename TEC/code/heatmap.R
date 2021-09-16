@@ -11,8 +11,6 @@ library(reshape2)
 library(tidyverse)
 library(metR)
 library(usethis)
-usethis::use_github()
-#https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
 
 lm.mod <- lm(mpg ~ wt*hp, data = mtcars)
 summary(lm.mod)
