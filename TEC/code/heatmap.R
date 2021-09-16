@@ -4,14 +4,13 @@
 #Date: May 5,2020
 #Reference: https://stats.stackexchange.com/questions/307863/level-plot-for-continuous-x-continuous-interaction-with-continuous-response
 
-library(cowplot)
-library(viridis)
-library(ggplot2)
-library(reshape2)
-library(tidyverse)
-library(metR)
-library(usethis)
+########################################################################################################################
+#load Libraries
+Packages <- c("usethis","metR","reshape2","tidyverse","viridis", "ggplot2", "tidyverse", "cowplot")
+lapply(Packages, library, character.only = TRUE)
 
+########################################################################################################################
+#Exmaple Stack Exchange
 lm.mod <- lm(mpg ~ wt*hp, data = mtcars)
 summary(lm.mod)
 
@@ -33,7 +32,8 @@ ggplot(prepplot, aes(wt, hp, fill = est.mpg)) +
   scale_x_continuous(expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0))
 ################################################################################################################################################################################################
-#TEC FRamework
+
+#TEC Framework
 #Beta Diversity-Space-Env
 lm.mod<-glm(betas.LCBD~Spatial*E_PC1,family=gaussian(link = "log"),data=all_big_dat)
 summary(lm.mod)
