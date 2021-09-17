@@ -1,3 +1,5 @@
+library(glmmTMB)
+library(performance)
 data<-read.csv("data.csv")
 
 mod1<-glmmTMB(betas.LCBD~River.dist.lake+ (1|O.NET),family=beta_family(), data=data)
