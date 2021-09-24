@@ -152,8 +152,6 @@ mod3<-glmmTMB(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),family=beta_
 null<-glmmTMB(betas.LCBD~1+ (1|O.NET),family=beta_family(),data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
 
-dd_specie1<-dd_specie%>%dplyr::select(c(betas.LCBD,River.dist.lake,Head.river.dist))
-write.csv(dd_specie1, "data.csv")
 performance::r2(mod1)
 performance::r2(mod2)
 performance::r2(mod3)
