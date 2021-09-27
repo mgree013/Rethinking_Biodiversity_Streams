@@ -411,6 +411,8 @@ pseudoR6 <- ((mod6$null.deviance-mod6$deviance)/mod6$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 ################################################################################################################
 #GLMM's
+devtools::install_github('bcjaeger/r2glmm')
+r2glmm::Glimmix_R2_V3(mod1)
 
 mod1<-glmmTMB(betas.LCBD~Spatial+ (1|O.NET),family=beta_family(), data=all_big_dat)
 mod2<-glmmTMB(betas.LCBD~E_PC1+ (1|O.NET),family=beta_family(),data=all_big_dat)
@@ -423,6 +425,7 @@ null<-glmmTMB(betas.LCBD~ (1|O.NET),family=beta_family(),data=all_big_dat)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6, null,weights = TRUE, sort = FALSE)
 r2(mod3,tolerance = 1e-10)
 summary(mod1)
+insight::compute_variances(mod1)
 fixef(mod6)
 VarCorr(mod6)
 r.squaredGLMM(null)

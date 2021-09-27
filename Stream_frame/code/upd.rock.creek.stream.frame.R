@@ -99,10 +99,13 @@ wilcox.test((specie$N1))
 
 mod1<-glm(N1~(River.dist.lake),family=gaussian(link = "identity"),data=dd_specie)
 mod2<-glm(N1~(Head.river.dist),family=gaussian(link = "identity"),data=dd_specie)
-mod5<-glm(N1~(River.dist.lake)*Head.river.dist,family=gaussian(link = "identity"),data=dd_specie)
+mod3<-glm(N1~(River.dist.lake)*Head.river.dist,family=gaussian(link = "identity"),data=dd_specie)
 null<-glm(N1~1,family=gaussian(link = "identity"),data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
-
+r2(mod1)
+r2(mod2)
+r2(mod3)
+r2(null)
 anova(mod1,mod2,mod5,mod6, null)
 
 pseudoR1 <- ((mod1$null.deviance-mod1$deviance)/mod1$null.deviance)
@@ -111,17 +114,18 @@ pseudoR0 <- ((mod5$null.deviance-mod5$deviance)/mod5$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 
 
-mod1<-glm(betas.LCBD~(River.dist.lake),family=gaussian(),data=dd_specie)
-mod2<-glm(betas.LCBD~(Head.river.dist),family=gaussian(),data=dd_specie)
-mod5<-glm(betas.LCBD~River.dist.lake*Head.river.dist,family=gaussian(),data=dd_specie)
-null<-glm(betas.LCBD~1,family=gaussian(),data=dd_specie)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
 
-mod1<-betareg(betas.LCBD~(River.dist.lake),data=dd_specie)
+#2)Betareg Models
+mod1<-betareg(betas.LCBD~River.dist.lake, data=dd_specie)
 mod2<-betareg(betas.LCBD~Head.river.dist,data=dd_specie)
-mod5<-betareg(betas.LCBD~River.dist.lake*Head.river.dist,data=dd_specie)
+mod3<-betareg(betas.LCBD~Head.river.dist*River.dist.lake,data=dd_specie)
 null<-betareg(betas.LCBD~1,data=dd_specie)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
+r2(mod1)
+r2(mod2)
+r2(mod3)
+r2(null)
+
 summary(mod1)
 anova(mod1,mod2,mod5,mod6, null)
 
@@ -129,53 +133,6 @@ pseudoR1 <- ((mod1$null.deviance-mod1$deviance)/mod1$null.deviance)
 pseudoR2 <- ((mod2$null.deviance-mod2$deviance)/mod2$null.deviance)
 pseudoR0 <- ((mod5$null.deviance-mod5$deviance)/mod5$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
-
-mod1<-betareg(betas.LCBD~(River.dist.lake),link = "logit",data=dd_specie)
-mod2<-betareg(betas.LCBD~(Head.river.dist),link = "logit",data=dd_specie)
-mod5<-betareg(betas.LCBD~River.dist.lake*Head.river.dist,link = "logit",data=dd_specie)
-null<-betareg(betas.LCBD~1,link = "logit",data=dd_specie)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod5, null,weights = TRUE, sort = FALSE)
-
-
-#2)Mixed Models
-mod1<-lmer(betas.LCBD~River.dist.lake+ (1|O.NET), data=dd_specie)
-mod2<-lmer(betas.LCBD~Head.river.dist+ (1|O.NET),data=dd_specie)
-mod3<-lmer(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),data=dd_specie)
-null<-lmer(betas.LCBD~1+ (1|O.NET),data=dd_specie)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
-r2(mod3)
-rsquared(mod3) 
-
-mod1<-glmmTMB(betas.LCBD~River.dist.lake+ (1|O.NET),family=beta_family(), data=dd_specie)
-mod2<-glmmTMB(betas.LCBD~Head.river.dist+ (1|O.NET),family=beta_family(),data=dd_specie)
-mod3<-glmmTMB(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),family=beta_family(),data=dd_specie)
-null<-glmmTMB(betas.LCBD~1+ (1|O.NET),family=beta_family(),data=dd_specie)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
-
-performance::r2(mod1)
-performance::r2(mod2)
-performance::r2(mod3)
-performance::r2(null)
-summary(mod3)
-performance::r2_nakagawa(null,tolerance = 0)
-hist(dd_specie$betas.LCBD)
-
-
-mod1<-glmmTMB(N1~River.dist.lake+ (1|O.NET),family=gaussian(), data=dd_specie)
-mod2<-glmmTMB(N1~Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
-mod3<-glmmTMB(N1~River.dist.lake*Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
-null<-glmmTMB(N1~1+ (1|O.NET),family=gaussian(),data=dd_specie)
-reported.table2 <- bbmle::AICtab(mod1,mod2,mod3, null,weights = TRUE, sort = F)
-summary(mod6)
-
-mod3<-glmer(N1~River.dist.lake*Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
-remotes::install_github("mastoffel/partR2", build_vignettes = TRUE, dependencies = TRUE) 
-library(partR2)
-partR2(mod3, R2_type = "conditional")
-partR2(mod3, R2_type = "marginal")
-r.squaredGLMM(mod3)
-cor(dd_specie$River.dist.lake,dd_specie$Head.river.dist)
-ggplot(dd_specie, aes(x=River.dist.lake,y=Head.river.dist))+geom_point()+geom_smooth(method="lm")
 ################################################################################################################################################################
 #FIGURES
 
