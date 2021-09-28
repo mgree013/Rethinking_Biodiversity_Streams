@@ -8,10 +8,10 @@ mod2<-glmmTMB(betas.LCBD~Head.river.dist* (1|O.NET),family=beta_family(),data=da
 mod3<-glmmTMB(betas.LCBD~Head.river.dist*River.dist.lake* (1|O.NET),family=beta_family(),data=data)
 null<-glmmTMB(betas.LCBD~1* (1|O.NET),family=beta_family(),data=data)
 
-mod1<-glmmTMB(betas.LCBD~River.dist.lake+ (1|O.NET),family=gaussian(), data=dd_specie)
-mod2<-glmmTMB(betas.LCBD~Head.river.dist+ (1|O.NET),family=gaussian(),data=dd_specie)
-mod3<-glmmTMB(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),family=gaussian(),data=dd_specie)
-null<-glmmTMB(betas.LCBD~1+ (1|O.NET),family=gaussian(),data=dd_specie)
+mod1<-glmmTMB(betas.LCBD~River.dist.lake+ (1|O.NET),family=beta_family(), data=dd_specie)
+mod2<-glmmTMB(betas.LCBD~Head.river.dist+ (1|O.NET),family=beta_family(),data=dd_specie)
+mod3<-glmmTMB(betas.LCBD~Head.river.dist*River.dist.lake+ (1|O.NET),family=beta_family(),data=dd_specie)
+null<-glmmTMB(betas.LCBD~1+ (1|O.NET),family=beta_family(),data=dd_specie)
 
 mod1<-lmer(betas.LCBD~River.dist.lake+ (1|O.NET), data=dd_specie)
 mod2<-lmer(betas.LCBD~Head.river.dist+ (1|O.NET),data=dd_specie)
