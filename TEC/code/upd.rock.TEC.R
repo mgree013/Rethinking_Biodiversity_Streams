@@ -311,7 +311,7 @@ p3<-all_big_dat%>%
   geom_point()+
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
-  xlab("Log Community Size") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+
+  xlab("Community Size Gradient") +labs(y=(("Local Contribution to \u03B2-diversity (LCBD) ")))+
   #facet_wrap(~Network,scales="free") + 
   theme_bw()+
   theme(panel.grid.major = element_blank(),
@@ -357,7 +357,7 @@ p6<-all_big_dat%>%
   stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
   #geom_smooth(method = "lm")+
   #facet_wrap(~Network,scales="free") + 
-  xlab(" Log Community Size") +labs(y=(("Shannon Diversity")))+
+  xlab("Community Size Gradient") +labs(y=(("Shannon Diversity")))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),

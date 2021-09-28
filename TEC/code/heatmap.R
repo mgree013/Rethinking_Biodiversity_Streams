@@ -455,7 +455,7 @@ tec_n2_<-ggplot(data=tec_n2,aes(x = est.Spatial, y = est.Com.Size.Gradient,z=est
 
 tec_n3_<-ggplot(data=tec_n3,aes(x = est.Spatial, y = est.E_PC1,z=est.n1))+ 
   geom_point(aes(x = Spatial, y = E_PC1, colour=SD))+
-  #geom_contour(aes(colour = after_stat(level)))+
+  geom_contour(aes(colour = after_stat(level)))+
   ggtitle("e)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
   labs(x = "Spatial Gradient", 
@@ -480,7 +480,7 @@ tec_bd1_<-ggplot(data=tec_bd1,aes( x = est.E_PC1,y = est.Com.Size.Gradient,z=est
   geom_contour(aes(colour = after_stat(level)))+
   ggtitle("a)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
-  labs(y = "Log Community Size", 
+  labs(y = "Community Size Gradient", 
        x = "Environmental Gradient", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
@@ -498,7 +498,7 @@ tec_bd2_<-ggplot(data=tec_bd2,aes( x = est.Spatial,y = est.Com.Size.Gradient,z=e
   geom_contour(aes(colour = after_stat(level)))+
   ggtitle("c)") +
   #geom_text_contour(aes(z = est.beta), skip=2, colour = "black", nudge_x =0.2 ) +
-  labs(y = "Log Community Size", 
+  labs(y = "Community Size Gradient", 
        x = "Spatial Gradient", 
        z = "LCBD",level="LCBD") + 
   theme(axis.line = element_line(colour = "black"),
