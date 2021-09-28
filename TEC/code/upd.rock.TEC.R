@@ -422,6 +422,35 @@ pseudoR5 <- ((mod5$null.deviance-mod5$deviance)/mod5$null.deviance)
 pseudoR6 <- ((mod6$null.deviance-mod6$deviance)/mod6$null.deviance)
 pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 
+
+#2)
+mod1<-betareg(betas.LCBD~Spatial+O.NET,data=all_big_dat)
+mod2<-betareg(betas.LCBD~E_PC1+O.NET,data=all_big_dat)
+mod3<-betareg(betas.LCBD~Com.Size.Gradient+O.NET,data=all_big_dat)
+mod4<-betareg(betas.LCBD~Spatial*E_PC1+O.NET,data=all_big_dat)
+mod5<-betareg(betas.LCBD~Spatial*Com.Size.Gradient+O.NET,data=all_big_dat)
+mod6<-betareg(betas.LCBD~E_PC1*Com.Size.Gradient+O.NET,data=all_big_dat)
+mod7<-betareg(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial+O.NET,data=all_big_dat)
+null<-betareg(betas.LCBD~1+O.NET,data=all_big_dat)
+
+mod1<-betareg(betas.LCBD~Spatial*O.NET,data=all_big_dat)
+mod2<-betareg(betas.LCBD~E_PC1*O.NET,data=all_big_dat)
+mod3<-betareg(betas.LCBD~Com.Size.Gradient*O.NET,data=all_big_dat)
+mod4<-betareg(betas.LCBD~Spatial*E_PC1*O.NET,data=all_big_dat)
+mod5<-betareg(betas.LCBD~Spatial*Com.Size.Gradient*O.NET,data=all_big_dat)
+mod6<-betareg(betas.LCBD~E_PC1*Com.Size.Gradient*O.NET,data=all_big_dat)
+mod7<-betareg(betas.LCBD~E_PC1*Com.Size.Gradient*Spatial*O.NET,data=all_big_dat)
+null<-betareg(betas.LCBD~1*O.NET,data=all_big_dat)
+reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,mod4,mod5,mod6, null,weights = TRUE, sort = FALSE)
+r2(mod1)
+r2(mod2)
+r2(mod3)
+r2(mod4)
+r2(mod5)
+r2(mod6)
+r2(null)
+
+summary(mod7)
 ########################################################################################################################################################################
 #Nww  Stuff
 

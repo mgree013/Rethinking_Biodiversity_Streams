@@ -87,7 +87,7 @@ d<-species%>%
 
 ############################################################################################################################################################################################
 #1)GLMS
-dd_specie<-specie%>%filter(River.dist.lake>0)%>%filter(Head.river.dist>2.5)
+dd_specie<-specie%>%filter(River.dist.lake>0)%>%filter(Head.river.dist>2.5)%>%filter(O.NET !="YOUNG")
 
 qqnorm(log(specie$betas.LCBD))
 qqline(log(specie$betas.LCBD))
@@ -116,11 +116,17 @@ pseudoRnull <- ((null$null.deviance-null$deviance)/null$null.deviance)
 
 
 #2)Betareg Models
+mod0<-betareg(betas.LCBD~River.dist.lake+O.NET, data=dd_specie)
+mod01<-betareg(betas.LCBD~River.dist.lake, data=dd_specie)
+reported.table2 <- bbmle::AICtab(mod01,mod0,weights = TRUE, sort = FALSE)
+
 mod1<-betareg(betas.LCBD~River.dist.lake, data=dd_specie)
 mod2<-betareg(betas.LCBD~Head.river.dist,data=dd_specie)
 mod3<-betareg(betas.LCBD~Head.river.dist*River.dist.lake,data=dd_specie)
 null<-betareg(betas.LCBD~1,data=dd_specie)
 reported.table2 <- bbmle::AICtab(mod1,mod2,mod3,null,weights = TRUE, sort = FALSE)
+summary(mod01)
+summary(mod0)
 r2(mod1)
 r2(mod2)
 r2(mod3)
