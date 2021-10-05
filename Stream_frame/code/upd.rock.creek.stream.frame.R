@@ -87,7 +87,7 @@ d<-species%>%
 
 ############################################################################################################################################################################################
 #1)GLMS
-dd_specie<-specie%>%filter(River.dist.lake>0)%>%filter(Head.river.dist>2.5)%>%filter(O.NET !="YOUNG")
+dd_specie<-specie%>%filter(River.dist.lake>0)%>%filter(Head.river.dist>2.5)#%>%filter(O.NET !="YOUNG")
 
 qqnorm(log(specie$betas.LCBD))
 qqline(log(specie$betas.LCBD))
