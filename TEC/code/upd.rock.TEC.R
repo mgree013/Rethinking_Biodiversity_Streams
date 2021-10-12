@@ -22,6 +22,30 @@ env <-read.csv(file= "TEC/data/dave.matt.env.full.12.29.19.csv", row.name=1)
 env<-env%>%dplyr::select(-c(WOODY_WETLANDS))
 summary(env)
 
+envs<-env%>%dplyr::select(c(Temp,Chlorophyll.mean,Conductivity,pH,Discharge.Mean,SHRUB_SCRUB,EVERGREEN_FOREST))
+
+Epca = prcomp(envs, scale.=TRUE)
+## and plot it
+biplot(Epca)
+ggbiplot(Epca, groups = env$O.NET, ellipse=TRUE) +theme(legend.direction = 'horizontal', legend.position = 'top')+  theme(axis.line = element_line(colour = "black"),
+                                                                                                                          panel.grid.major = element_blank(),
+                                                                                                                          panel.grid.minor = element_blank(),
+                                                                                                                          panel.border = element_blank(),
+                                                                                                                          panel.background = element_blank()) 
+summary(Epca)
+
+spatials<-env%>%dplyr::select(c(Head.river.dist, River.dist.lake, Up.Lake.area, Elevation))
+
+Epca = prcomp(spatials, scale.=TRUE)
+## and plot it
+biplot(Epca)
+ggbiplot(Epca, groups = env$O.NET, ellipse=TRUE) +theme(legend.direction = 'horizontal', legend.position = 'top')+  theme(axis.line = element_line(colour = "black"),
+                                                                                                                          panel.grid.major = element_blank(),
+                                                                                                                          panel.grid.minor = element_blank(),
+                                                                                                                          panel.border = element_blank(),
+                                                                                                                          panel.background = element_blank()) 
+summary(Epca)
+
 species<-species%>%dplyr::select(-c(Arachnida,Chironomidae,Nematomorpha,Oligochaeta,Ostracoda,Turbellaria,Euhirudinea))
 #env<-env%>%mutate(Euc.dist.lake=log(1+Euc.dist.lake),River.dist.lake=log(1+River.dist.lake),Elevation=log(1+Elevation),Head.river.dist=log(1+Head.river.dist),Size.net.dist=Head.river.dist*Up.Lake.area,Size.river.dist=River.dist.lake*Up.Lake.area,Elev.dist=River.dist.lake/Elevation)
 
