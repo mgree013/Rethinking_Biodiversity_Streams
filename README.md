@@ -16,4 +16,5 @@ Photo of Smapling Sites
 Figure 2: Reuslts from Biodiveristy Frameworks in Strem Ecology
 ![](Figs/Rplot01.jpeg)
 
-
+Figure 3: Reuslts from Theory of Ecological Communities Framework
+![](Figs/Rplot_TEC1.jpg)
