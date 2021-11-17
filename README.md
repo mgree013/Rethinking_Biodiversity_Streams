@@ -13,8 +13,7 @@ Photo of Smapling Sites
 
 # Results
 
-#Figure 2: 
+Figure 2: Reuslts from Biodiveristy Frameworks in Strem Ecology
 ![](Figs/Rplot01.jpeg)
 
-![](Figs/Rplot01copy.jpeg)
 
