@@ -5,7 +5,8 @@ Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. H
 ## Supplemental Photo: Photo of Sampling Site in the Sierra Nevada, CA (pc: Matthew D. Green)
 ![](Images/pic.png)
 
-## Figure 1:Photo of Smapling Sites
+# Methods 
+## Figure 1:Maps of Sampling Locations
 ![](Figs/Map.jpg)
 
 
