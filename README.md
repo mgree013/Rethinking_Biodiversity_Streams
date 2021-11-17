@@ -18,3 +18,4 @@ Figure 2: Reuslts from Biodiveristy Frameworks in Strem Ecology
 
 Figure 3: Reuslts from Theory of Ecological Communities Framework
 ![](Figs/Rplot_TEC1.jpg)
+![](Figs/Rplot_TEC2.jpg)
