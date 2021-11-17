@@ -6,6 +6,5 @@ Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. H
 
 ![](Figs/Rplot01.jpeg)
 
-![](Figs/Rplot01 copy.jpeg)
+![](Figs/Rplot01copy.jpeg)
 
-![](Figs/Rplot.jpeg)
