@@ -1,5 +1,6 @@
 # Rethinking_Biodiversity_Streams
-Analysis for Rethinking Biodiversity in Stream Ecosystems
+
+Rethinking Biodiversity in Stream Ecosystems, in press Ecological Monogrpahs
 
 Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. Herbst
 
