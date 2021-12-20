@@ -316,3 +316,52 @@ g4<-e2%>%
 
 
 plot_grid(g1,g4, ncol=2)
+
+######
+sp_env<-species%>%rownames_to_column(var = "Site")
+env_env<-env%>%rownames_to_column(var = "Site")
+  
+new_env<-sp_env%>%left_join(env_env, by="Site")%>%
+  filter(log(River.dist.lake+1)>0)%>%
+  filter(log(Pisidium) >0)
+  
+
+dog<-lm(log(Pisidium)~log(River.dist.lake+1), data=new_env)
+summary(dog)
+performance::r2(dog)
+pseudoR1 <- ((dog$null.deviance-dog$deviance)/dog$null.deviance)
+
+aaa<-new_env%>%
+  filter(log(River.dist.lake+1)>0)%>%
+  filter(Simulium >0)%>%
+  #filter(Network != "BUBBS" &O.NET != "KERN")%>%
+  ggplot(aes(x = log(River.dist.lake+1), y = log(Simulium))) + 
+  geom_point()+
+  stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
+  #geom_smooth(method = "lm", se=F)+ 
+  ggtitle("a)") +
+  annotate("text", x = 2, y = .95, label = "R^2 == 0.24", parse = TRUE) +
+  xlab(" Log Distance from Upstream Lakes (m)") +labs(y=(("Simulium Log Density")))+theme_bw() +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()) 
+
+bbb<-new_env%>%
+  filter(Pisidium >0)%>%
+  #filter(Network != "BUBBS" &O.NET != "KERN")%>%
+  ggplot(aes(x = log(River.dist.lake+1), y = log(Pisidium+1))) + 
+  ggtitle("b)") +
+  geom_point()+
+  stat_smooth(method = glm,method.args = list(family = gaussian(link = "identity")))+
+  annotate("text", x = 2, y = .95, label = "R^2 == 0.15", parse = TRUE) +
+  xlab(" Log Distance from Upstream Lakes (m)") +labs(y=(("Pisidium Log Density")))+theme_bw() +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()) 
+
+
+plot_grid(aaa,bbb)
