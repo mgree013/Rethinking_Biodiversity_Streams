@@ -14,16 +14,16 @@ Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. H
 
 ## Results from Biodiveristy Frameworks in Stream Ecology
 
-Figure 2:
+#### Figure 2:
 
 ![](Figs/Rplot01.jpeg)
 
 ## Reuslts from Theory of Ecological Communities Framework
 
-Figure 3:
+#### Figure 3:
 
 ![](Figs/Rplot_TEC1.jpg)
 
-Figure 4: 
+#### Figure 4: 
 
 ![](Figs/Rplot_TEC2.jpg)
