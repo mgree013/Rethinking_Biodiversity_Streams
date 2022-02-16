@@ -7,7 +7,7 @@ Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. H
 
 # Methods 
 ## Figure 1:Maps of Sampling Locations
-![](Figs/Map.jpg)
+![](Figs/Picture1.png)
 
 
 # Results
