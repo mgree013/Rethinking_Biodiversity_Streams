@@ -1,6 +1,8 @@
-# Rethinking Biodiversity Patterns and Processes in Stream Ecosystems, in press Ecological Monographs
+# Rethinking Biodiversity Patterns and Processes in Stream Ecosystems, Ecological Monographs
 
 Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. Herbst
+
+Article Link:
 
 ## Supplemental Photo: Photo of Sampling Site in the Sierra Nevada, CA (pc: Matthew D. Green)
 ![](Images/pic.png)
