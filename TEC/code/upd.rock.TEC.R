@@ -2,7 +2,7 @@
 #Part 2 Applied TEC Framework
 #Author: Matthew Douglas Green
 #Date: Sept 14,2021
-
+#Data: https://datadryad.org/stash/dataset/doi:10.5061/dryad.2fqz612qw
 ########################################################################################################################
 #load packages
 Packages <- c("olsrr","semPlot","lavaan","MuMIn","lme4","vegan", "ggplot2", "tidyverse", "ape","MuMIn","adespatial", "betapart", "cowplot")
