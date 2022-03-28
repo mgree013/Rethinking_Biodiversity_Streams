@@ -2,7 +2,7 @@
 
 Authors: Matthew D. Green, Kurt E. Anderson, Marko J. Spasojevic, and David B. Herbst
 
-Article Link: Coming Soon!
+Article Link: https://esajournals.onlinelibrary.wiley.com/doi/epdf/10.1002/ecm.1520
 
 ## Supplemental Photo: Photo of Sampling Site in the Sierra Nevada, CA (pc: Matthew D. Green)
 ![](Images/pic.png)
