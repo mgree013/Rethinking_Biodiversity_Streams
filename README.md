@@ -8,7 +8,7 @@ Article Link: https://esajournals.onlinelibrary.wiley.com/doi/epdf/10.1002/ecm.1
 ![](Images/pic.png)
 
 # Methods 
-## Figure 1:Maps of Sampling Locations
+## Figure 1: Maps of Sampling Locations
 ![](Figs/Picture1.png)
 
 
